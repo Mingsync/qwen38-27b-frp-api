@@ -13,3 +13,6 @@ frp/frp_token
 *.p12
 *.pfx
 frp-pki-private/
+inference-image.tar
+runtime-cache.tar.gz
+bundle.json

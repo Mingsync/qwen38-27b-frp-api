@@ -31,3 +31,28 @@ jobs:
         run: |
           bash init-config.sh
           docker compose config --quiet
+          docker compose -p qwen38-offline-check -f compose.yaml -f offline/compose.verify.yaml config --quiet
+
+  integration:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install Nginx for template validation
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends nginx
+          sudo systemctl stop nginx
+      - name: Validate Nginx HTTP and TLS templates
+        run: python3 scripts/check_nginx.py
+      - name: Download checksum-verified FRP test binaries
+        run: |
+          cd "$RUNNER_TEMP"
+          curl -fL --retry 3 https://github.com/fatedier/frp/releases/download/v0.71.1/frp_0.71.1_linux_amd64.tar.gz -o frp_0.71.1_linux_amd64.tar.gz
+          sha256sum --check --ignore-missing "$GITHUB_WORKSPACE/frp/RELEASE-SHA256SUMS"
+          tar -xzf frp_0.71.1_linux_amd64.tar.gz
+      - name: Verify FRP TLS, authentication, allowed ports and streaming
+        run: python3 tests/integration/frp_tunnel.py --bin-dir "$RUNNER_TEMP/frp_0.71.1_linux_amd64"
