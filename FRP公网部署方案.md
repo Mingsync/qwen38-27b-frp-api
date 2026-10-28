@@ -268,7 +268,7 @@ sudo certbot renew --dry-run
 - 仅允许 models、chat completions 两个 API 路径及其 `/qwen` 前缀形式，其余 404；不公开管理接口、health、metrics。
 - 保留 Authorization；模型 Key 仍由内网服务校验，云端配置无需保存同一业务 Key。
 - 关闭代理缓冲和缓存，保持 SSE 逐块返回，读写空闲超时 600 秒；关闭自动重试，避免长生成被透明重发。[Nginx 代理配置](https://nginx.org/en/docs/http/ngx_http_proxy_module.html)
-- 同一 API 域名在两个 chat 路径上合计最多 **8 个正在处理的 HTTP 请求**，超限返回 429；这是公网入口保护，**不是 GPU 同时生成 8 路**。当前 GPU MAX_NUM_SEQS=2，另外的请求可能排队。没有按客户端 IP 限制，以免同一企业 NAT 下的多人被误伤。[Nginx 连接限制](https://nginx.org/en/docs/http/ngx_http_limit_conn_module.html)
+- 同一 API 域名在两个 chat 路径上合计最多 **8 个正在处理的 HTTP 请求**，超限返回 429；这是公网入口保护，**不是 GPU 同时生成 8 路**。当前 GPU MAX_NUM_SEQS=2，另外的请求可能排队；后端 MAX_NUM_QUEUED_REQS=8 还限制运行加等待请求，后端超限返回 503。没有按客户端 IP 限制，以免同一企业 NAT 下的多人被误伤。[Nginx 连接限制](https://nginx.org/en/docs/http/ngx_http_limit_conn_module.html)
 - 请求体默认上限 2MB；超长中文历史可能更大，遇到合法 413 时按实际 token 上限与 JSON 字节数调整，不盲目取消限制。
 
 需要更严格的用户级限额、审计或独立 Key 时，在此入口增加支持对应能力的 API 网关。共享业务 Key、FRP Token 和 Nginx 全局连接限制均不是按用户计费体系。
@@ -347,4 +347,4 @@ openssl x509 -checkend 2592000 -noout -in /etc/frp/pki/server.crt
 
 模型 API Key 轮换只涉及本地模型和业务客户端；FRP Token 轮换需要两端同步文件并重启服务，均不能视为无中断热更新。部署完成、备份确认后清理两台服务器上的 bootstrap 私钥/Token 副本，正式文件只留在 `/etc/frp` 的受限目录，离线 CA 私钥继续离线保管。
 
-最终公网验收通过后记录真实 API URL、FRP 版本、两端服务状态、公网证书到期时间、隧道证书到期时间、验证日期与压测结果。默认模型上下文与并发仍为 **每请求 16K、同时生成 2 路**；需要 4 路/更长上下文时按主方案逐档压测。
+最终公网验收通过后记录真实 API URL、FRP 版本、两端服务状态、公网证书到期时间、隧道证书到期时间、验证日期与压测结果。默认模型上下文与并发仍为 **每请求 16K（含输入与输出）、同时生成 2 路、运行加等待最多 8 个请求**，每序列输出上限 1024，默认关闭思考，空闲 SSE 每 15 秒保活；共享 Key 不能作为每用户配额，保活也不等于请求总时长预算。需要 4 路/更长上下文时按主方案逐档压测。

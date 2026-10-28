@@ -2,6 +2,12 @@
 
 代码和配置通过功能分支提交，由 Pull Request 合并到 `main`。首次发布分支为 `qwen38-deploy`。
 
+## 提交与 PR 规范
+
+按功能拆成细粒度提交，一个 commit 只处理一件事，遵循 Conventional Commits：`fix(api): bound generation output`、`feat(ops): add recovery timer`、`test(model): cover manifest mismatch`、`docs(deploy): explain migration`。功能、测试和独立文档变更分别提交；与该变更对应的 `SHA256SUMS` 同步更新，不单独留下失效清单。
+
+开始前读取远端分支，保留他人的修改；不通过 force push 覆盖共享历史。已公开的问题用后续修复提交更正。使用 PR 模板说明最终实现、迁移与验证边界，功能开发和测试进展可在 PR 的 Conversation 使用 Add a comment 同步。合并使用 merge commit，保留细粒度提交历史。
+
 ## 本地检查
 
 Python 校验需要 3.11+，只使用标准库；不下载模型，不要求 GPU。
@@ -11,9 +17,19 @@ python3 scripts/validate.py
 python3 -m unittest discover -s tests -v
 bash init-config.sh
 docker compose config --quiet
+docker compose -p qwen38-offline-check -f compose.yaml -f offline/compose.verify.yaml config --quiet
 ```
 
 `init-config.sh` 只在本机创建被忽略的 `.env` 和测试/部署 Key，不覆盖已有配置。校验脚本扫描版本清单中的文件，不能代替人工核对待提交内容。
+
+Linux CI 还会安装真实 Nginx，并下载官方 SHA-256 校验后的 FRP v0.71.1 二进制。可在准备好相应依赖后手动复现：
+
+```bash
+python3 scripts/check_nginx.py
+python3 tests/integration/frp_tunnel.py --bin-dir /可信目录/frp_0.71.1_linux_amd64
+```
+
+Nginx 测试使用临时证书、日志目录及高位回环端口，检查仓库中四份配置；FRP 测试验证实际 TLS 隧道、鉴权透传、SSE、错误 Token/证书名及不允许的远端端口。两者都不要求 GPU，不修改生产服务。macOS 复现时使用同版本 Darwin 二进制和支持 SAN 的 OpenSSL 3，可通过 `OPENSSL_BIN` 指定路径。
 
 ## 更新校验清单
 

@@ -1,10 +1,26 @@
 #!/usr/bin/env python3
 """Download a pinned checkpoint; verify shard sizes against Hugging Face metadata."""
 import argparse
-import hashlib
 import json
 import re
 from pathlib import Path
+from validate_model import sha256
+
+
+def ensure_download_identity(root, repo, revision):
+    """Allow interrupted downloads to resume only for the same pinned identity."""
+    previous = root / 'deployment-manifest.json'
+    marker = root / '.deployment-download.json'
+    for identity in [previous, marker]:
+        if identity.exists():
+            data = json.loads(identity.read_text())
+            if (data.get('repo'), data.get('revision')) != (repo, revision):
+                raise ValueError('Use a new directory for a different model/revision')
+    if not previous.exists() and not marker.exists() and any(root.iterdir()):
+        raise ValueError('Nonempty directory without a download identity; use a fresh directory')
+    temporary = root / '.deployment-download.json.tmp'
+    temporary.write_text(json.dumps({'repo':repo,'revision':revision})+'\n')
+    temporary.replace(marker)
 
 
 def main():
@@ -21,6 +37,7 @@ def main():
         raise SystemExit('Resolved revision mismatch')
     root = Path(args.output).resolve()
     root.mkdir(parents=True, exist_ok=True)
+    ensure_download_identity(root, args.repo, args.revision)
     # Download the complete repository: processors, tokenizer and templates matter.
     snapshot_download(repo_id=args.repo, revision=args.revision,
                       local_dir=str(root), max_workers=4)
@@ -37,16 +54,32 @@ def main():
             raise SystemExit(f'Size mismatch: {name}')
         weight_bytes += file.stat().st_size
     config = json.loads((root / 'config.json').read_text())
+    files = {}
+    for entry in info.siblings:
+        file = root / entry.rfilename
+        if not file.is_file():
+            raise SystemExit(f'Missing repository file: {entry.rfilename}')
+        actual = sha256(file)
+        lfs = getattr(entry, 'lfs', None)
+        upstream_hash = (lfs.get('sha256') if isinstance(lfs, dict)
+                         else getattr(lfs, 'sha256', None))
+        if upstream_hash and actual != upstream_hash:
+            raise SystemExit(f'Upstream LFS checksum mismatch: {entry.rfilename}')
+        files[entry.rfilename] = {'bytes': file.stat().st_size, 'sha256': actual}
     manifest = {
+        'schema_version': 2,
         'repo': args.repo, 'revision': info.sha, 'weight_files': len(weights),
         'weight_file_bytes': weight_bytes,
         'architecture': config.get('architectures'),
         'quantization': config.get('quantization_config', {}).get('quant_method'),
-        'config_sha256': hashlib.sha256((root / 'config.json').read_bytes()).hexdigest(),
+        'config_sha256': sha256(root / 'config.json'),
+        'index_sha256': sha256(root / 'model.safetensors.index.json'),
+        'files': files,
     }
-    (root / 'deployment-manifest.json').write_text(
-        json.dumps(manifest, ensure_ascii=False, indent=2) + '\n')
-    print(json.dumps(manifest, ensure_ascii=False, indent=2))
+    temporary = root / 'deployment-manifest.json.tmp'
+    temporary.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + '\n')
+    temporary.replace(root / 'deployment-manifest.json')
+    print(json.dumps({k:v for k,v in manifest.items() if k != 'files'}, ensure_ascii=False, indent=2))
 
 
 if __name__ == '__main__':
