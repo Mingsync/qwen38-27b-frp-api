@@ -1,11 +1,26 @@
 #!/usr/bin/env python3
 """Download a pinned checkpoint; verify shard sizes against Hugging Face metadata."""
 import argparse
-import hashlib
 import json
 import re
 from pathlib import Path
 from validate_model import sha256
+
+
+def ensure_download_identity(root, repo, revision):
+    """Allow interrupted downloads to resume only for the same pinned identity."""
+    previous = root / 'deployment-manifest.json'
+    marker = root / '.deployment-download.json'
+    for identity in [previous, marker]:
+        if identity.exists():
+            data = json.loads(identity.read_text())
+            if (data.get('repo'), data.get('revision')) != (repo, revision):
+                raise ValueError('Use a new directory for a different model/revision')
+    if not previous.exists() and not marker.exists() and any(root.iterdir()):
+        raise ValueError('Nonempty directory without a download identity; use a fresh directory')
+    temporary = root / '.deployment-download.json.tmp'
+    temporary.write_text(json.dumps({'repo':repo,'revision':revision})+'\n')
+    temporary.replace(marker)
 
 
 def main():
@@ -22,13 +37,7 @@ def main():
         raise SystemExit('Resolved revision mismatch')
     root = Path(args.output).resolve()
     root.mkdir(parents=True, exist_ok=True)
-    previous = root / 'deployment-manifest.json'
-    if previous.exists():
-        prior = json.loads(previous.read_text())
-        if (prior.get('repo'), prior.get('revision')) != (args.repo, args.revision):
-            raise SystemExit('Use a new directory for a different model/revision; refusing to mix snapshots')
-    elif any(root.iterdir()):
-        raise SystemExit('Nonempty directory without a manifest; use a fresh directory')
+    ensure_download_identity(root, args.repo, args.revision)
     # Download the complete repository: processors, tokenizer and templates matter.
     snapshot_download(repo_id=args.repo, revision=args.revision,
                       local_dir=str(root), max_workers=4)
