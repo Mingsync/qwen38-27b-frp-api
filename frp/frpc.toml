@@ -1,0 +1,27 @@
+# On the GPU Linux host, NOT inside a separate network-isolated container.
+serverAddr = "frp.example.com"
+serverPort = 7000
+loginFailExit = false
+
+auth.method = "token"
+auth.additionalScopes = ["HeartBeats", "NewWorkConns"]
+auth.tokenSource.type = "file"
+auth.tokenSource.file.path = "/etc/frp/frp_token"
+
+transport.protocol = "tcp"
+transport.tcpMux = true
+transport.tcpMuxKeepaliveInterval = 30
+transport.tls.enable = true
+transport.tls.trustedCaFile = "/etc/frp/pki/ca.crt"
+transport.tls.serverName = "frp.example.com"
+
+log.to = "console"
+log.level = "info"
+log.disablePrintColor = true
+
+[[proxies]]
+name = "qwen38-api"
+type = "tcp"
+localIP = "127.0.0.1"
+localPort = 8000
+remotePort = 18000
