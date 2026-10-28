@@ -1,6 +1,6 @@
 # Qwen3.8 27B 本地部署配置方案
 
-公开仓库：[Mingsync/qwen38-27b-frp-api](https://github.com/Mingsync/qwen38-27b-frp-api)。首次发布整理日期：2026-10-28；下文模型/环境资料核对日期保留为原记录日期。
+公开仓库：[Mingsync/qwen38-27b-frp-api](https://github.com/Mingsync/qwen38-27b-frp-api)。
 
 本仓库包含双 RTX 5090 上的 vLLM API 配置、官方模型下载脚本、API Key 鉴权、FRP TLS 隧道、Nginx HTTPS 和 systemd 服务。先阅读本文本地部署步骤，再按 [FRP 公网部署方案](FRP公网部署方案.md) 接入云服务器；[验证边界](VALIDATION.md) 与 [贡献及检查流程](CONTRIBUTING.md) 单独记录。
 
@@ -11,13 +11,9 @@ cd qwen38-27b-frp-api
 
 克隆操作不启动服务。后续按文档把配置放到 `/opt/qwen38`，替换示例域名并初始化自己的 Key；仓库不包含实际业务密钥、证书私钥或模型权重。
 
-编制日期：2026-10-26。适用目标：Linux x86_64 单机、2 × NVIDIA GeForce RTX 5090 32GB，提供可自定义 API Key、IP、端口、域名及 URL 前缀的 OpenAI 兼容文本推理服务。
+适用目标：Linux x86_64 单机、2 × NVIDIA GeForce RTX 5090 32GB，提供可自定义 API Key、IP、端口、域名及 URL 前缀的 OpenAI 兼容文本推理服务。
 
-**按已提供环境调整：Ubuntu 26.04 LTS + 现有 NVIDIA 595.84 驱动 + NVIDIA Container Toolkit 1.20.1 + Docker + vLLM 0.32.0 + 官方 `Qwen/Qwen3.8-27B-FP8` + TP=2。** 首启用 16K 上下文、2 个活跃序列、Eager 模式，验收后再提高性能参数。域名访问可加宿主机 Nginx；也可直接通过内网 IP 访问。
-
-用户提供的信息：Release 26.04（本方案按 Ubuntu 26.04 处理，以 `/etc/os-release` 确认）、Driver 595.84、`nvidia-smi` CUDA Version 13.2、Container Toolkit CLI 1.20.1，commit `dffc40b4f820ce5c512633bac9e0418d0e05a2ee`。这些是用户报告的安装信息，尚不等于 Docker 已获得双卡或模型已运行。现有驱动与 Toolkit 正常时跳过重新安装，先按 `服务器环境适配说明.md` 验证容器 GPU。
-
-后续用户补充的 `sudo docker info` 已列出 `Runtimes: io.containerd.runc.v2 nvidia runc`、`Default Runtime: runc`，确认 Docker 已注册 NVIDIA runtime。默认 runc 可以保留；直接执行容器双卡检查，跳过 runtime 注册和 Docker 重启步骤。此输出尚不能证明容器 CUDA 运算或模型推理成功。
+首启用 16K 上下文、2 个活跃序列、Eager 模式，验收后再提高性能参数。域名访问可加宿主机 Nginx；也可直接通过内网 IP 访问。
 
 本目录是交付配置包，未连接或修改目标 Linux 服务器，未下载几十 GB 权重，也未在双卡 5090 上实测性能。已核对官方仓库和文档；脚本的静态与本地逻辑检查记录见 `VALIDATION.md`。文中的显存余量和参数档位是工程估算，最终以目标服务器的加载日志、NCCL 检查与压测为准。
 
@@ -25,7 +21,7 @@ cd qwen38-27b-frp-api
 
 ## 1. 模型与版本确认
 
-官方模型名称确实为 `Qwen/Qwen3.8-27B`，并非 Qwen3-8B 或 Qwen3-32B。它是带视觉编码器的稠密混合注意力模型，配置架构名称仍为 `Qwen3_5ForConditionalGeneration`、`model_type=qwen3_5`，不能据此判断下载错了版本。[官方模型卡](https://huggingface.co/Qwen/Qwen3.8-27B)、[官方 config.json](https://huggingface.co/Qwen/Qwen3.8-27B/raw/main/config.json)
+官方模型名称为 `Qwen/Qwen3.8-27B`。它是带视觉编码器的稠密混合注意力模型，配置架构名称仍为 `Qwen3_5ForConditionalGeneration`、`model_type=qwen3_5`。[官方模型卡](https://huggingface.co/Qwen/Qwen3.8-27B)、[官方 config.json](https://huggingface.co/Qwen/Qwen3.8-27B/raw/main/config.json)
 
 本方案默认使用官方预量化 FP8 权重，保留模型原始聊天模板，通过 checkpoint 自带的量化配置自动识别。不要把 BF16 文件改名冒充 FP8，也不要给 FP8 checkpoint 强加 AWQ/GPTQ 参数。[官方 FP8 模型卡](https://huggingface.co/Qwen/Qwen3.8-27B-FP8)
 
@@ -77,13 +73,6 @@ RTX 5090 的参考规格为每卡 32GB GDDR7、计算能力 12.0、无 NVLink，
 
 本包默认 KV cache 为 `auto`，未量化模块使用 BF16。FP8 权重量化不等于 KV cache 也是 FP8。模型原生上下文上限也不等于当前机器能在该长度下承载任意并发。
 
-### 2.4 其余硬件建议
-
-- CPU：建议 16 个以上物理核心；单实例先给 OpenMP 8 线程，避免线程争抢。
-- 内存：推荐 128GB；64GB 仅作为 FP8、无额外大服务时的紧凑起点。BF16 下载/加载、CPU offload、压测和模型切换时优先 128GB 或更多。
-- 存储：NVMe SSD，建议为镜像、FP8/BF16 两套权重、缓存和回滚预留 250–300GB 可用空间；仅部署 FP8 可先预留 120GB。实际下载前 `df -h`。
-- PCIe：优先 CPU 直连的 x16/x16 或合理 x8/x8，避免第二张卡实际挂在芯片组 x4。执行 `nvidia-smi topo -m`，必要时检查 `lspci -vv` 的 LnkSta。
-- 电源与散热：两卡参考功耗合计可达 1150W，再计 CPU、主板和瞬时负载，整机可按 1600–2000W 级供电评估，实际由整机厂按具体卡、CPU、线路和限功耗确定。不要把单卡官方“系统电源要求”直接套用于双卡整机。
 
 ## 3. 推理框架选型
 
@@ -531,74 +520,8 @@ CPU_OFFLOAD_GB=0
 
 别名可保持 `qwen3.8-27b`，客户端不必改。若仍 OOM，先缩上下文与序列预算，确保其他进程释放 GPU；必要时可尝试 `CPU_OFFLOAD_GB=4`（每 GPU），但 PCIe 取权重会拖慢推理、增加 RAM 需求，属兜底方案。若 FP8 已满足精度需求，通常优先恢复 FP8，避免长期 offload。[vLLM offload 参数定义](https://docs.vllm.ai/en/v0.32.0/cli/serve/)
 
-## 13. 常见报错排查
 
-### 13.1 `nvidia-smi` 失败、看不到两卡
-
-先在宿主排查驱动与硬件，容器无法修复宿主驱动。检查 `lspci`、`lsmod`、`sudo dmesg` 的 NVIDIA/Xid 信息；核对 open 模块、当前内核与驱动匹配、Secure Boot/MOK、供电和 BIOS。驱动更新后必须重启。
-
-### 13.2 `could not select device driver ... [[gpu]]`
-
-Container Toolkit 未安装或 Docker runtime 未生效。重跑 `nvidia-ctk runtime configure --runtime=docker`、重启 Docker，再运行 preflight。若 Docker 和驱动都正常但容器只见一卡，核对 `.env` 的 GPU_0/GPU_1，设备 ID 必须来自宿主 `nvidia-smi`。
-
-### 13.3 `CUDA driver version is insufficient` / `unsatisfied condition: cuda>=...`
-
-镜像 CUDA runtime 超出宿主驱动能力。以 preflight 的 `torch.version.cuda` 与 NVIDIA 兼容说明判断；升级支持 5090 的驱动，或选择官方提供且兼容的镜像变体并重新验证。不通过给系统到处安装另一套 cuDNN 来修复驱动问题。
-
-### 13.4 `no kernel image is available` / `invalid device function` / `sm_120`
-
-旧 PyTorch、FlashAttention/FlashInfer 或自编译扩展不支持 5090。检查是否误进宿主 Conda 环境、是否用了旧 CUDA 镜像。回到本包固定镜像，运行真实矩阵检查；PyTorch 有基础 CUDA 支持仍不代表所有 FP8/attention 扩展都支持 sm120。不要在运行容器里随意升级 torch 破坏二进制匹配。
-
-### 13.5 `KeyError: qwen3_5` / 不支持架构 / processor 导入失败
-
-模型名与 `model_type` 不同是正常现象，问题通常是推理框架或 Transformers 太旧，或模型文件缺失。先确认实际运行 vLLM 版本、完整 config/tokenizer/processor；优先使用固定镜像。原始配置标注 Transformers 开发版本，不代表应在成熟 vLLM 镜像里无条件 `pip install --upgrade transformers`。若确有依赖缺口，构建并测试新镜像后重新固定 digest。
-
-### 13.6 `CUDA out of memory` / `No available memory for the cache blocks`
-
-按发生阶段处理：
-
-- 加载权重阶段：确认 `.env` 指向 FP8 目录、TP=2、生效两卡，清理经确认可停止的其他 GPU 作业。减上下文不能解决“权重本身放不下”。
-- profile/prefill 阶段：减 `MAX_NUM_BATCHED_TOKENS`、`MAX_NUM_SEQS`；恢复 EAGER=1。
-- KV 容量检查失败：减 `MAX_MODEL_LEN`/序列数；在其他 GPU 进程已清理、显存有余量时，才适当提高 `GPU_MEMORY_UTILIZATION`。
-- 运行中临时峰值 OOM：减调度预算/并发，或降低显存利用率以留出运行时余量。降低该比例也会缩小 KV pool，因此并非所有 OOM 都该调低或调高同一个值。
-
-不要直接设成 0.99。长上下文与并发占用按同时活跃的 token 总量计算，不能仅看单请求长度。
-
-### 13.7 NCCL 卡住、P2P 不支持、双卡无响应
-
-先停止服务再重跑独立 NCCL 检查，核对拓扑和 `/dev/shm`。GeForce 无 NVLink，P2P 能力取决于实际平台，不应假定所有拓扑都可用。可在 `.env` 临时设 `NCCL_P2P_DISABLE=1` 后复测；没有 IB/RDMA 的单机若出现 IB 初始化问题，可临时设 `NCCL_IB_DISABLE=1`。成功后再启动服务并比较性能。
-
-这些开关只为定位传输问题，可能降低吞吐，不是通用加速设置。不建议直接关 ACS/IOMMU 等整机机制。若双卡通信仍异常，应先修复主机/驱动/插槽问题；BF16 不能简单退回单卡 32GB。
-
-### 13.8 FP8 内核或 DeepGEMM 错误
-
-检查权重里的 quantization_config 与镜像支持，不要把 NVFP4/AWQ 参数用于 FP8。官方配方说明消费级 Blackwell 的该模型存在 CUTLASS 路径，具体选择由版本决定。若日志明确指向 DeepGEMM，可在 Compose environment 中临时加入 `VLLM_USE_DEEP_GEMM: "0"` 重新创建容器作诊断；它不是默认必要设置。不要只屏蔽报错后跳过真实中文输出和长文验收。
-
-### 13.9 `401 Unauthorized`
-
-确认 `Authorization: Bearer ` 前缀、Key 没有复制空格/回车、客户端没有把 HF Token 当 Key、轮换后容器已重建、代理保留 Authorization。避免将密钥打印到日志排错。用 `verify.py` 测“无/错/对”三种情况。
-
-### 13.10 `404` 或 `model does not exist`
-
-路由 404：核对 URL 的 `/v1`、前缀与 Nginx URI 映射；本包主动关闭 `/v1/responses`、`/v1/embeddings` 等接口。模型 404：先查 `/v1/models`，请求 `model` 应填 `qwen3.8-27b`，不是文件路径。内网应用若只支持 Responses API，需要额外适配并扩展白名单，不能只改 Base URL。
-
-### 13.11 `address already in use` / `cannot assign requested address`
-
-前者用 `ss -lntp` 检查端口冲突并改宿主 API_PORT；后者检查 BIND_HOST 是否属于当前服务器。容器固定 8000 与宿主 18000 并不冲突。不要无故结束占用端口的其他业务进程。
-
-### 13.12 连接拒绝、Nginx `502/504`、流式等待整段才返回
-
-先在宿主用后端地址测 `/health` 与 `/v1/models`，再测域名。502 多为后端未就绪或地址/端口错误；504 先查队列、首 token 延迟和推理耗时，再考虑超时。Nginx 在容器内时不能用它自己的 127.0.0.1 找宿主后端。SSE 缓冲问题检查 `proxy_buffering off`、上游负载均衡/CDN 缓冲与客户端 `--no-buffer`。
-
-### 13.13 输出只有思考、回答为空、超出上下文
-
-默认模型会思考，短输出预算可能在最终答案前耗尽。先用本包 non-thinking 验收；业务开启 reasoning 时解析相应字段并提高预算。上下文包含系统提示、模板、历史思考和输出，历史越长余量越少；不能把“16K 配置”理解为还能额外输出 16K。
-
-### 13.14 启动长时间无响应或离线内核下载失败
-
-看日志区分读取权重、编译内核、NCCL 等待还是 HTTP 已就绪。离线变量只针对 Hub，不一定覆盖 FlashInfer 内核来源；按第 6 节先准备匹配内核/缓存。不要使用其他 CUDA/FlashInfer 版本的缓存强行替换。
-
-## 14. 运维、升级与回滚
+## 13. 运维、升级与回滚
 
 ```bash
 cd /opt/qwen38
@@ -616,7 +539,7 @@ docker compose up -d --force-recreate qwen
 
 最终上线以这些结果为准：目标网络可达、自定义 Key 生效、未授权推理被阻断、模型回答正确、代理流式正常、目标上下文/并发下无 OOM、重启恢复成功。完成后把实测容量、响应延迟和最终 digest 写回本目录的运维记录。
 
-## 15. 公网访问扩展：FRP 自建隧道
+## 14. 公网访问扩展：FRP 自建隧道
 
 已按“内网主动连接云服务器”的方式补齐公网部署，详见 [FRP 公网部署方案](FRP公网部署方案.md)。默认只在云端开放 HTTPS 443、证书校验 80 和隧道入口 TCP 7000；云端业务映射口 18000 与内网模型 8000 均为回环监听。FRP v0.71.1 两端使用独立隧道 Token、TLS 服务端证书校验和 systemd 自动恢复，公网业务继续使用原模型 API Key。
 
