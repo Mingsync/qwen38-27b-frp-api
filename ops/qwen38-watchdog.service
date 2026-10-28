@@ -1,0 +1,16 @@
+[Unit]
+Description=Bounded recovery for an unhealthy Qwen container
+After=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/qwen38/ops/watchdog.py --project-dir /opt/qwen38 --restart
+StateDirectory=qwen38-watchdog
+UMask=0077
+TimeoutStartSec=180
+NoNewPrivileges=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/var/lib/qwen38-watchdog
+StandardOutput=journal
+StandardError=journal
