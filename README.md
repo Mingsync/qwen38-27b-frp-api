@@ -520,74 +520,8 @@ CPU_OFFLOAD_GB=0
 
 别名可保持 `qwen3.8-27b`，客户端不必改。若仍 OOM，先缩上下文与序列预算，确保其他进程释放 GPU；必要时可尝试 `CPU_OFFLOAD_GB=4`（每 GPU），但 PCIe 取权重会拖慢推理、增加 RAM 需求，属兜底方案。若 FP8 已满足精度需求，通常优先恢复 FP8，避免长期 offload。[vLLM offload 参数定义](https://docs.vllm.ai/en/v0.32.0/cli/serve/)
 
-## 13. 常见报错排查
 
-### 13.1 `nvidia-smi` 失败、看不到两卡
-
-先在宿主排查驱动与硬件，容器无法修复宿主驱动。检查 `lspci`、`lsmod`、`sudo dmesg` 的 NVIDIA/Xid 信息；核对 open 模块、当前内核与驱动匹配、Secure Boot/MOK、供电和 BIOS。驱动更新后必须重启。
-
-### 13.2 `could not select device driver ... [[gpu]]`
-
-Container Toolkit 未安装或 Docker runtime 未生效。重跑 `nvidia-ctk runtime configure --runtime=docker`、重启 Docker，再运行 preflight。若 Docker 和驱动都正常但容器只见一卡，核对 `.env` 的 GPU_0/GPU_1，设备 ID 必须来自宿主 `nvidia-smi`。
-
-### 13.3 `CUDA driver version is insufficient` / `unsatisfied condition: cuda>=...`
-
-镜像 CUDA runtime 超出宿主驱动能力。以 preflight 的 `torch.version.cuda` 与 NVIDIA 兼容说明判断；升级支持 5090 的驱动，或选择官方提供且兼容的镜像变体并重新验证。不通过给系统到处安装另一套 cuDNN 来修复驱动问题。
-
-### 13.4 `no kernel image is available` / `invalid device function` / `sm_120`
-
-旧 PyTorch、FlashAttention/FlashInfer 或自编译扩展不支持 5090。检查是否误进宿主 Conda 环境、是否用了旧 CUDA 镜像。回到本包固定镜像，运行真实矩阵检查；PyTorch 有基础 CUDA 支持仍不代表所有 FP8/attention 扩展都支持 sm120。不要在运行容器里随意升级 torch 破坏二进制匹配。
-
-### 13.5 `KeyError: qwen3_5` / 不支持架构 / processor 导入失败
-
-模型名与 `model_type` 不同是正常现象，问题通常是推理框架或 Transformers 太旧，或模型文件缺失。先确认实际运行 vLLM 版本、完整 config/tokenizer/processor；优先使用固定镜像。原始配置标注 Transformers 开发版本，不代表应在成熟 vLLM 镜像里无条件 `pip install --upgrade transformers`。若确有依赖缺口，构建并测试新镜像后重新固定 digest。
-
-### 13.6 `CUDA out of memory` / `No available memory for the cache blocks`
-
-按发生阶段处理：
-
-- 加载权重阶段：确认 `.env` 指向 FP8 目录、TP=2、生效两卡，清理经确认可停止的其他 GPU 作业。减上下文不能解决“权重本身放不下”。
-- profile/prefill 阶段：减 `MAX_NUM_BATCHED_TOKENS`、`MAX_NUM_SEQS`；恢复 EAGER=1。
-- KV 容量检查失败：减 `MAX_MODEL_LEN`/序列数；在其他 GPU 进程已清理、显存有余量时，才适当提高 `GPU_MEMORY_UTILIZATION`。
-- 运行中临时峰值 OOM：减调度预算/并发，或降低显存利用率以留出运行时余量。降低该比例也会缩小 KV pool，因此并非所有 OOM 都该调低或调高同一个值。
-
-不要直接设成 0.99。长上下文与并发占用按同时活跃的 token 总量计算，不能仅看单请求长度。
-
-### 13.7 NCCL 卡住、P2P 不支持、双卡无响应
-
-先停止服务再重跑独立 NCCL 检查，核对拓扑和 `/dev/shm`。GeForce 无 NVLink，P2P 能力取决于实际平台，不应假定所有拓扑都可用。可在 `.env` 临时设 `NCCL_P2P_DISABLE=1` 后复测；没有 IB/RDMA 的单机若出现 IB 初始化问题，可临时设 `NCCL_IB_DISABLE=1`。成功后再启动服务并比较性能。
-
-这些开关只为定位传输问题，可能降低吞吐，不是通用加速设置。不建议直接关 ACS/IOMMU 等整机机制。若双卡通信仍异常，应先修复主机/驱动/插槽问题；BF16 不能简单退回单卡 32GB。
-
-### 13.8 FP8 内核或 DeepGEMM 错误
-
-检查权重里的 quantization_config 与镜像支持，不要把 NVFP4/AWQ 参数用于 FP8。官方配方说明消费级 Blackwell 的该模型存在 CUTLASS 路径，具体选择由版本决定。若日志明确指向 DeepGEMM，可在 Compose environment 中临时加入 `VLLM_USE_DEEP_GEMM: "0"` 重新创建容器作诊断；它不是默认必要设置。不要只屏蔽报错后跳过真实中文输出和长文验收。
-
-### 13.9 `401 Unauthorized`
-
-确认 `Authorization: Bearer ` 前缀、Key 没有复制空格/回车、客户端没有把 HF Token 当 Key、轮换后容器已重建、代理保留 Authorization。避免将密钥打印到日志排错。用 `verify.py` 测“无/错/对”三种情况。
-
-### 13.10 `404` 或 `model does not exist`
-
-路由 404：核对 URL 的 `/v1`、前缀与 Nginx URI 映射；本包主动关闭 `/v1/responses`、`/v1/embeddings` 等接口。模型 404：先查 `/v1/models`，请求 `model` 应填 `qwen3.8-27b`，不是文件路径。内网应用若只支持 Responses API，需要额外适配并扩展白名单，不能只改 Base URL。
-
-### 13.11 `address already in use` / `cannot assign requested address`
-
-前者用 `ss -lntp` 检查端口冲突并改宿主 API_PORT；后者检查 BIND_HOST 是否属于当前服务器。容器固定 8000 与宿主 18000 并不冲突。不要无故结束占用端口的其他业务进程。
-
-### 13.12 连接拒绝、Nginx `502/504`、流式等待整段才返回
-
-先在宿主用后端地址测 `/health` 与 `/v1/models`，再测域名。502 多为后端未就绪或地址/端口错误；504 先查队列、首 token 延迟和推理耗时，再考虑超时。Nginx 在容器内时不能用它自己的 127.0.0.1 找宿主后端。SSE 缓冲问题检查 `proxy_buffering off`、上游负载均衡/CDN 缓冲与客户端 `--no-buffer`。
-
-### 13.13 输出只有思考、回答为空、超出上下文
-
-默认模型会思考，短输出预算可能在最终答案前耗尽。先用本包 non-thinking 验收；业务开启 reasoning 时解析相应字段并提高预算。上下文包含系统提示、模板、历史思考和输出，历史越长余量越少；不能把“16K 配置”理解为还能额外输出 16K。
-
-### 13.14 启动长时间无响应或离线内核下载失败
-
-看日志区分读取权重、编译内核、NCCL 等待还是 HTTP 已就绪。离线变量只针对 Hub，不一定覆盖 FlashInfer 内核来源；按第 6 节先准备匹配内核/缓存。不要使用其他 CUDA/FlashInfer 版本的缓存强行替换。
-
-## 14. 运维、升级与回滚
+## 13. 运维、升级与回滚
 
 ```bash
 cd /opt/qwen38
@@ -605,7 +539,7 @@ docker compose up -d --force-recreate qwen
 
 最终上线以这些结果为准：目标网络可达、自定义 Key 生效、未授权推理被阻断、模型回答正确、代理流式正常、目标上下文/并发下无 OOM、重启恢复成功。完成后把实测容量、响应延迟和最终 digest 写回本目录的运维记录。
 
-## 15. 公网访问扩展：FRP 自建隧道
+## 14. 公网访问扩展：FRP 自建隧道
 
 已按“内网主动连接云服务器”的方式补齐公网部署，详见 [FRP 公网部署方案](FRP公网部署方案.md)。默认只在云端开放 HTTPS 443、证书校验 80 和隧道入口 TCP 7000；云端业务映射口 18000 与内网模型 8000 均为回环监听。FRP v0.71.1 两端使用独立隧道 Token、TLS 服务端证书校验和 systemd 自动恢复，公网业务继续使用原模型 API Key。
 
