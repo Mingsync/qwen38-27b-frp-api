@@ -36,14 +36,25 @@ GitHub 仓库首次发布检查：
 - 在临时目录再次校验 Compose，确认 Key 初始化不覆盖现有值、权限为 600；临时密钥已清除。
 - 增加 PR 模板、贡献说明与 GitHub Actions 工作流。工作流使用只读权限，checkout 固定官方 v7.0.1 的提交 SHA，不持久化 Git 凭据，不下载模型、不运行 GPU 或部署公网服务。远端检查结果以对应 PR 的 Checks 为准。
 
+2026-10-28 优化修复检查（PR #2）：
+
+- 固定官方 vLLM 0.32.0 镜像 index digest，记录 Linux amd64/arm64 子清单；核对版本化 CLI 的生成上限、运行加排队请求限制、默认聊天模板参数和 SSE 保活参数。镜像身份来自 Registry 读取，不是本机拉取或 GPU 执行结果。
+- 本地 38 项标准库单元测试通过：原有鉴权/白名单/SSE 8 项、模型清单 6 项、下载续传身份 3 项、启动策略 4 项、watchdog 7 项、离线包防误操作 5 项及压测统计 5 项。离线测试使用模拟 Docker 调用，只证明错误路径拒绝操作，不代表完成真实镜像构建或断网 GPU 验收。
+- 发布清单增至 57 个文件，Python/Shell/TOML 语法、SHA-256、凭证与个人路径扫描通过。真实 Nginx/FRP 验证脚本和新文件均已纳入清单。
+- 在临时目录用本机 Compose 5.2.0 校验生产配置和断网覆盖配置：回环发布、两卡预约、输出/队列默认值、四个缓存卷、断网项目无端口且禁止 pull；初始化重复运行不覆盖 Key，权限为 600。未启动模型容器。
+- 使用真实 macOS FRP v0.71.1 再次通过严格配置、证书链/SAN、TLS 隧道 HTTP/SSE、错误 Token/证书名和 allowPorts 拒绝测试；后端仍为模拟服务。
+- GitHub Linux CI 已通过真实 Nginx 对四份 HTTP/HTTPS 配置的 `nginx -t`，并通过校验过发行包的 Linux FRP 二进制隧道测试。Nginx 检查使用临时证书、高位回环端口和临时日志目录，不替代目标主机的实际域名/证书检查。最终提交的 Checks 以 [PR #2](https://github.com/Mingsync/qwen38-27b-frp-api/pull/2) 为准。
+- 新增标准库 `benchmark.py` 记录实际 API 成功率、答案 TTFT、端到端 P50/P95 及 usage 吞吐；单元测试确认不把保活/思考计为答案、不把截断或错误流计为成功。当前没有双卡实测吞吐或固定用户数结论。
+
 尚未在目标服务器执行：
 
-- 目标机的 GPU 枚举、容器 GPU 注入检查、实际镜像拉取与 digest 固定；现有驱动/Toolkit 正常时不重新安装。Docker runtime 注册情况已由用户输出确认。
+- 目标机的 GPU 枚举、容器 GPU 注入检查，以及按已锁定 digest 实际拉取镜像；现有驱动/Toolkit 正常时不重新安装。Docker runtime 注册情况已由用户输出确认。
 - `preflight.sh` 的 CUDA 运算、实际安装版本/CLI 参数检查。
 - 双卡 NCCL all-reduce、FP8 模型加载与混合注意力内核执行。
 - `verify.py` 对真实模型的 HTTP 验收、curl/Python SSE、长上下文和并发压测。
 - Nginx 本机 `nginx -t`、证书配置、DNS/防火墙与业务客户端端到端测试。
 - 峰值显存、TTFT、吞吐、长文精度、Key 轮换、主机重启恢复。
+- 内核镜像实际构建、断网 GPU 生成、缓存导出/恢复、目标机断网复验，以及 watchdog 的真实 systemd 安装和故障恢复演练。
 - FRP 在真实两端 Linux 的安装/systemd 运行、云安全组与出口策略、公网 DNS/ACME 签证书、云端 `nginx -t`、真实公网 SSE 与隧道断线恢复、云流量与延迟。交付包内没有真实域名证书、CA 私钥或隧道 Token。
 
 验收时按 README 的顺序完成上述项目，并补记：GPU 型号及实测显存、驱动版本、镜像 digest、模型 revision、最终 `.env`（不含密钥）、业务负载与指标。显存规划与候选并发档位不能替代实测结果。
