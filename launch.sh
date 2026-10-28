@@ -20,8 +20,9 @@ for name, default, minimum in [('MAX_OUTPUT_TOKENS', '1024', 1),
     value = os.environ.get(name, default)
     if not value.isascii() or not value.isdecimal() or int(value) < minimum:
         raise SystemExit(f'Invalid {name}: expected integer >= {minimum}')
-if os.environ.get('ENABLE_THINKING', '0') not in ('0', '1'):
-    raise SystemExit('ENABLE_THINKING must be 0 or 1')
+for name, default in [('ENABLE_THINKING','0'),('PREFIX_CACHING','0'),('EAGER','1'),('TEXT_ONLY','1')]:
+    if os.environ.get(name, default) not in ('0','1'):
+        raise SystemExit(f'{name} must be 0 or 1')
 PY
 thinking=false
 [[ "${ENABLE_THINKING:-0}" == 1 ]] && thinking=true
@@ -38,7 +39,6 @@ args=(
   --max-num-seqs "${MAX_NUM_SEQS:-2}"
   --max-num-batched-tokens "${MAX_NUM_BATCHED_TOKENS:-2048}"
   --enable-chunked-prefill
-  --no-enable-prefix-caching
   --generation-config vllm
   --override-generation-config "{\"max_new_tokens\":${MAX_OUTPUT_TOKENS:-1024}}"
   --max-num-queued-reqs "${MAX_NUM_QUEUED_REQS:-8}"
@@ -49,6 +49,11 @@ args=(
   --disable-fastapi-docs
 )
 [[ "${EAGER:-1}" == 1 ]] && args+=(--enforce-eager)
+if [[ "${PREFIX_CACHING:-0}" == 1 ]]; then
+  args+=(--enable-prefix-caching)
+else
+  args+=(--no-enable-prefix-caching)
+fi
 [[ "${TEXT_ONLY:-1}" == 1 ]] && args+=(--language-model-only)
 [[ "${CPU_OFFLOAD_GB:-0}" != 0 ]] && args+=(--cpu-offload-gb "$CPU_OFFLOAD_GB")
 # FP8 is inferred from the downloaded checkpoint's quantization_config.

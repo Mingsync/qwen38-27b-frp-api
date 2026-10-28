@@ -29,7 +29,7 @@ class ServerPolicyTests(unittest.TestCase):
             env = dict(os.environ, PATH=str(root / 'bin') + os.pathsep + os.environ['PATH'],
                        MODEL_ID='test/model', MODEL_REVISION='a' * 40)
             for name in ['MAX_OUTPUT_TOKENS', 'MAX_NUM_QUEUED_REQS', 'ENABLE_THINKING',
-                         'SSE_KEEP_ALIVE_INTERVAL']:
+                         'SSE_KEEP_ALIVE_INTERVAL','PREFIX_CACHING','EAGER','TEXT_ONLY']:
                 env.pop(name, None)
             env.update(changes or {})
             return subprocess.run(['bash', str(path)], env=env, capture_output=True, text=True)
@@ -60,3 +60,11 @@ class ServerPolicyTests(unittest.TestCase):
                 result = self.launch(env)
                 self.assertNotEqual(result.returncode, 0)
                 self.assertEqual(result.stdout, '')
+
+    def test_performance_flags_can_be_compared_without_editing_launcher(self):
+        result=self.launch({'EAGER':'0','PREFIX_CACHING':'1'})
+        self.assertEqual(result.returncode,0,result.stderr)
+        args=json.loads(result.stdout)
+        self.assertNotIn('--enforce-eager',args)
+        self.assertIn('--enable-prefix-caching',args)
+        self.assertNotIn('--no-enable-prefix-caching',args)
