@@ -13,11 +13,7 @@ cd qwen38-27b-frp-api
 
 编制日期：2026-10-26。适用目标：Linux x86_64 单机、2 × NVIDIA GeForce RTX 5090 32GB，提供可自定义 API Key、IP、端口、域名及 URL 前缀的 OpenAI 兼容文本推理服务。
 
-**按已提供环境调整：Ubuntu 26.04 LTS + 现有 NVIDIA 595.84 驱动 + NVIDIA Container Toolkit 1.20.1 + Docker + vLLM 0.32.0 + 官方 `Qwen/Qwen3.8-27B-FP8` + TP=2。** 首启用 16K 上下文、2 个活跃序列、Eager 模式，验收后再提高性能参数。域名访问可加宿主机 Nginx；也可直接通过内网 IP 访问。
-
-用户提供的信息：Release 26.04（本方案按 Ubuntu 26.04 处理，以 `/etc/os-release` 确认）、Driver 595.84、`nvidia-smi` CUDA Version 13.2、Container Toolkit CLI 1.20.1，commit `dffc40b4f820ce5c512633bac9e0418d0e05a2ee`。这些是用户报告的安装信息，尚不等于 Docker 已获得双卡或模型已运行。现有驱动与 Toolkit 正常时跳过重新安装，先按 `服务器环境适配说明.md` 验证容器 GPU。
-
-后续用户补充的 `sudo docker info` 已列出 `Runtimes: io.containerd.runc.v2 nvidia runc`、`Default Runtime: runc`，确认 Docker 已注册 NVIDIA runtime。默认 runc 可以保留；直接执行容器双卡检查，跳过 runtime 注册和 Docker 重启步骤。此输出尚不能证明容器 CUDA 运算或模型推理成功。
+首启用 16K 上下文、2 个活跃序列、Eager 模式，验收后再提高性能参数。域名访问可加宿主机 Nginx；也可直接通过内网 IP 访问。
 
 本目录是交付配置包，未连接或修改目标 Linux 服务器，未下载几十 GB 权重，也未在双卡 5090 上实测性能。已核对官方仓库和文档；脚本的静态与本地逻辑检查记录见 `VALIDATION.md`。文中的显存余量和参数档位是工程估算，最终以目标服务器的加载日志、NCCL 检查与压测为准。
 
@@ -25,7 +21,7 @@ cd qwen38-27b-frp-api
 
 ## 1. 模型与版本确认
 
-官方模型名称确实为 `Qwen/Qwen3.8-27B`，并非 Qwen3-8B 或 Qwen3-32B。它是带视觉编码器的稠密混合注意力模型，配置架构名称仍为 `Qwen3_5ForConditionalGeneration`、`model_type=qwen3_5`，不能据此判断下载错了版本。[官方模型卡](https://huggingface.co/Qwen/Qwen3.8-27B)、[官方 config.json](https://huggingface.co/Qwen/Qwen3.8-27B/raw/main/config.json)
+官方模型名称为 `Qwen/Qwen3.8-27B`。它是带视觉编码器的稠密混合注意力模型，配置架构名称仍为 `Qwen3_5ForConditionalGeneration`、`model_type=qwen3_5`。[官方模型卡](https://huggingface.co/Qwen/Qwen3.8-27B)、[官方 config.json](https://huggingface.co/Qwen/Qwen3.8-27B/raw/main/config.json)
 
 本方案默认使用官方预量化 FP8 权重，保留模型原始聊天模板，通过 checkpoint 自带的量化配置自动识别。不要把 BF16 文件改名冒充 FP8，也不要给 FP8 checkpoint 强加 AWQ/GPTQ 参数。[官方 FP8 模型卡](https://huggingface.co/Qwen/Qwen3.8-27B-FP8)
 
