@@ -6,6 +6,7 @@ After=docker.service
 Type=oneshot
 ExecStart=/usr/bin/python3 /opt/qwen38/ops/watchdog.py --project-dir /opt/qwen38 --restart
 StateDirectory=qwen38-watchdog
+Environment=DOCKER_CONFIG=/var/lib/qwen38-watchdog/docker
 UMask=0077
 TimeoutStartSec=180
 NoNewPrivileges=true
