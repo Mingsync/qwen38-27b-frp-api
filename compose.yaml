@@ -1,0 +1,69 @@
+name: qwen38
+services:
+  qwen:
+    image: ${VLLM_IMAGE:?Run init-config.sh first}
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 120s
+    working_dir: /opt/qwen
+    entrypoint: ["/bin/bash", "/opt/qwen/launch.sh"]
+    ports:
+      - "${BIND_HOST:-127.0.0.1}:${API_PORT:-8000}:8000"
+    shm_size: "16gb"
+    ulimits:
+      memlock: {soft: -1, hard: -1}
+      nofile: {soft: 65535, hard: 65535}
+    environment:
+      PYTHONPATH: /opt/qwen
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      VLLM_NO_USAGE_STATS: "1"
+      DO_NOT_TRACK: "1"
+      VLLM_ENGINE_READY_TIMEOUT_S: "1800"
+      SERVED_MODEL_NAME: ${SERVED_MODEL_NAME:-qwen3.8-27b}
+      TENSOR_PARALLEL_SIZE: ${TENSOR_PARALLEL_SIZE:-2}
+      GPU_MEMORY_UTILIZATION: ${GPU_MEMORY_UTILIZATION:-0.90}
+      MAX_MODEL_LEN: ${MAX_MODEL_LEN:-16384}
+      MAX_NUM_SEQS: ${MAX_NUM_SEQS:-2}
+      MAX_NUM_BATCHED_TOKENS: ${MAX_NUM_BATCHED_TOKENS:-2048}
+      EAGER: ${EAGER:-1}
+      TEXT_ONLY: ${TEXT_ONLY:-1}
+      CPU_OFFLOAD_GB: ${CPU_OFFLOAD_GB:-0}
+      OMP_NUM_THREADS: ${OMP_NUM_THREADS:-8}
+      NCCL_P2P_DISABLE: ${NCCL_P2P_DISABLE:-0}
+      NCCL_IB_DISABLE: ${NCCL_IB_DISABLE:-0}
+    volumes:
+      - type: bind
+        source: ${MODEL_DIR:?Set MODEL_DIR}
+        target: /model
+        read_only: true
+        bind: {create_host_path: false}
+      - ./launch.sh:/opt/qwen/launch.sh:ro
+      - ./local_guard.py:/opt/qwen/local_guard.py:ro
+      - ./nccl-check.py:/opt/qwen/nccl-check.py:ro
+      - vllm_cache:/root/.cache/vllm
+      - triton_cache:/root/.triton
+    secrets:
+      - qwen_api_key
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ["${GPU_0:-0}", "${GPU_1:-1}"]
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      start_period: 30m
+      retries: 5
+    logging:
+      driver: json-file
+      options: {max-size: "20m", max-file: "5"}
+secrets:
+  qwen_api_key:
+    file: ./secrets/api_key
+volumes:
+  vllm_cache:
+  triton_cache:

@@ -1,0 +1,15 @@
+.env
+secrets/
+__pycache__/
+*.pyc
+*.log
+frp/pki/
+frp/frp_token
+*.key
+.venv/
+.download-venv/
+.client-venv/
+*.pem
+*.p12
+*.pfx
+frp-pki-private/

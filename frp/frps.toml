@@ -1,0 +1,22 @@
+# Cloud server. All proxy data ports bind to loopback, not the public interface.
+bindAddr = "0.0.0.0"
+bindPort = 7000
+proxyBindAddr = "127.0.0.1"
+allowPorts = [{ single = 18000 }]
+maxPortsPerClient = 1
+
+auth.method = "token"
+auth.additionalScopes = ["HeartBeats", "NewWorkConns"]
+auth.tokenSource.type = "file"
+auth.tokenSource.file.path = "/etc/frp/frp_token"
+
+transport.tcpMux = true
+transport.tcpMuxKeepaliveInterval = 30
+transport.tls.force = true
+transport.tls.certFile = "/etc/frp/pki/server.crt"
+transport.tls.keyFile = "/etc/frp/pki/server.key"
+
+log.to = "console"
+log.level = "info"
+log.disablePrintColor = true
+# No dashboard, SSH gateway, UDP, QUIC or HTTP virtual-host listeners.

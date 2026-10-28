@@ -1,0 +1,26 @@
+[Unit]
+Description=FRP client for local Qwen inference
+Wants=network-online.target
+After=network-online.target docker.service
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User=frp
+Group=frp
+WorkingDirectory=/etc/frp
+ExecStartPre=/usr/local/bin/frpc verify -c /etc/frp/frpc.toml
+ExecStart=/usr/local/bin/frpc -c /etc/frp/frpc.toml
+Restart=always
+RestartSec=5s
+LimitNOFILE=65535
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
