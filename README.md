@@ -11,7 +11,7 @@ cd qwen38-27b-frp-api
 
 克隆操作不启动服务。后续按文档把配置放到 `/opt/qwen38`，替换示例域名并初始化自己的 Key；仓库不包含实际业务密钥、证书私钥或模型权重。
 
-编制日期：2026-10-26。适用目标：Linux x86_64 单机、2 × NVIDIA GeForce RTX 5090 32GB，提供可自定义 API Key、IP、端口、域名及 URL 前缀的 OpenAI 兼容文本推理服务。
+适用目标：Linux x86_64 单机、2 × NVIDIA GeForce RTX 5090 32GB，提供可自定义 API Key、IP、端口、域名及 URL 前缀的 OpenAI 兼容文本推理服务。
 
 首启用 16K 上下文、2 个活跃序列、Eager 模式，验收后再提高性能参数。域名访问可加宿主机 Nginx；也可直接通过内网 IP 访问。
 
