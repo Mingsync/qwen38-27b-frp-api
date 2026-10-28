@@ -13,14 +13,18 @@ def consume_sse(response, start, clock=time.perf_counter):
     first=None
     usage=None
     content_seen=False
+    completed=False
     for line in response:
         # Ignore keep-alive comments and blank lines; they are not first tokens.
         if not line.startswith(b'data:'):
             continue
         payload=line[5:].strip()
         if payload==b'[DONE]':
+            completed=True
             break
         event=json.loads(payload)
+        if event.get('error'):
+            raise ValueError('Server reported an SSE error')
         if event.get('usage'):
             usage=event['usage']
         for choice in event.get('choices',[]):
@@ -28,6 +32,8 @@ def consume_sse(response, start, clock=time.perf_counter):
                 content_seen=True
                 if first is None:
                     first=clock()-start
+    if not completed:
+        raise ValueError('SSE stream ended before DONE')
     if not content_seen:
         raise ValueError('No answer content received')
     return {'ttft_seconds':first,'elapsed_seconds':clock()-start,

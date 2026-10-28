@@ -24,3 +24,9 @@ class BenchmarkTests(unittest.TestCase):
     def test_percentiles_include_queued_latency(self):
         self.assertEqual(percentile([1,2,3,4],.5),2.5)
         self.assertAlmostEqual(percentile([1,2,3,4],.95),3.85)
+
+    def test_partial_or_errored_stream_is_not_counted_as_success(self):
+        for tail in [b'',b'data: {"error":{"message":"fixture failure"}}\ndata: [DONE]\n']:
+            stream=io.BytesIO(b'data: {"choices":[{"delta":{"content":"partial"}}]}\n'+tail)
+            with self.assertRaises(ValueError):
+                consume_sse(stream,0)
