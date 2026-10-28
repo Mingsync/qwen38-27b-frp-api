@@ -1,7 +1,5 @@
 # Qwen3.8 27B 本地部署配置方案
 
-公开仓库：[Mingsync/qwen38-27b-frp-api](https://github.com/Mingsync/qwen38-27b-frp-api)。
-
 本仓库包含双 RTX 5090 上的 vLLM API 配置、官方模型下载脚本、API Key 鉴权、FRP TLS 隧道、Nginx HTTPS 和 systemd 服务。先阅读本文本地部署步骤，再按 [FRP 公网部署方案](FRP公网部署方案.md) 接入云服务器；[验证边界](VALIDATION.md) 与 [贡献及检查流程](CONTRIBUTING.md) 单独记录。
 
 ```bash
