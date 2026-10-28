@@ -29,7 +29,7 @@ cd qwen38-27b-frp-api
 
 - FP8：`Qwen/Qwen3.8-27B-FP8`，revision=`017b9c7af6b5689d5dd426a76e0bc077eb5ca20a`。
 - BF16：`Qwen/Qwen3.8-27B`，revision=`1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0`。
-- 推理镜像：`vllm/vllm-openai:v0.32.0`。该版本已发布；镜像拉取成功后记录 digest，并在生产 `.env` 中改成 `vllm/vllm-openai@sha256:实际值`。[vLLM 0.32.0 官方发行页](https://github.com/vllm-project/vllm/releases/tag/v0.32.0)
+- 推理镜像：官方 `vllm/vllm-openai:v0.32.0`，默认配置已固定为 `image-lock.json` 记录的多平台 index digest `sha256:befccf0e7e4089aa23926bb6f887a85c0d46c2a99e6de5c5ffdf5cb7957c5b34`，同时记录 Linux amd64/arm64 子清单。更新版本时重新核对官方 digest 并一起更新锁文件与配置。[vLLM 0.32.0 官方发行页](https://github.com/vllm-project/vllm/releases/tag/v0.32.0)
 
 FP8 服务在客户端统一使用别名 `qwen3.8-27b`。API 请求的 `model` 必须与该别名一致，不能直接假定它等于下载仓库名。
 
@@ -91,13 +91,18 @@ Qwen3.8模型配置方案/
   .env.example              IP、端口、模型、性能参数示例
   compose.yaml              双卡容器服务
   init-config.sh            初始化 .env 和随机 API Key，不覆盖现有值
-  download-model.py         固定 revision 下载并核对权重分片大小
+  download-model.py         固定 revision 下载、校验分片并生成完整性清单
   launch.sh                 容器启动入口，加载 Key 并构造启动参数
   local_guard.py            接口白名单与 Key 校验中间件
   preflight.sh              GPU/CUDA/CLI 预检查
   nccl-check.py             两卡 NCCL 实际通信测试
   verify.py                 模型、鉴权、推理、旁路接口验收
   client.py                 Python 流式调用示例
+  validate_model.py         启动校验与完整权重 SHA-256 验收
+  image-lock.json           官方基础镜像 digest 与平台清单
+  benchmark.py              真实 API 流式延迟及吞吐压测
+  offline/                  内核镜像、断网验收与缓存导入导出
+  ops/                      有重启预算的健康恢复与维护说明
   nginx/                    HTTP、HTTPS 与 SSE 反向代理配置
   FRP公网部署方案.md         云服务器中转的公网 HTTPS 完整部署步骤
   frp/                      两端 FRP、systemd、证书和云端 Nginx 配置
@@ -200,9 +205,9 @@ python3 -m venv .download-venv
   --output /srv/models/Qwen3.8-27B-FP8
 ```
 
-下载脚本固定提交并下载完整仓库，检查索引引用的每个 safetensors 分片存在且大小与远端元数据一致，输出 `deployment-manifest.json`。它不执行模型仓库的 Python 代码，也不会把 HF Token 当作推理 API Key。公共仓库一般无需 Token；需要时在下载环境单独配置 `HF_TOKEN`。
+下载脚本固定提交并下载完整仓库，检查每个权重分片及远端大小，对全部仓库文件计算 SHA-256，并在上游提供 LFS SHA-256 时比对，原子写入 schema v2 的 `deployment-manifest.json`。中断后可向同一目录、同一 repo/revision 重跑；更换版本必须使用新目录。启动时核对清单中的模型身份、config/索引/模板/tokenizer 哈希以及所有文件大小，完整权重哈希在传输或升级验收时使用 `validate_model.py --full-hash` 检查。它不执行模型仓库的 Python 代码，也不会把 HF Token 当作推理 API Key。公共仓库一般无需 Token；需要时在下载环境单独配置 `HF_TOKEN`。
 
-也可用官方 CLI `hf download 仓库ID --revision 提交SHA --local-dir 目标目录`；必须保留 tokenizer、chat template、processor 和 config 文件，不能只复制 safetensors。[Hugging Face CLI 下载说明](https://huggingface.co/docs/huggingface_hub/guides/cli)
+官方 CLI 可用于独立下载，但不会生成本项目的模型清单，不能直接满足本项目的启动校验。部署时使用上述脚本；已有 schema v1 清单的同版本目录可重跑脚本升级，未带下载身份或清单的非空目录应换新目录下载。必须保留 tokenizer、chat template、processor 和 config 文件，不能只复制 safetensors。[Hugging Face CLI 下载说明](https://huggingface.co/docs/huggingface_hub/guides/cli)
 
 ### 6.2 网络受限或离线服务器
 
@@ -220,9 +225,7 @@ cd /srv/models/Qwen3.8-27B-FP8
 sha256sum -c SHA256SUMS
 ```
 
-镜像也可在联网同架构机器上 `docker pull vllm/vllm-openai:v0.32.0`，然后 `docker save -o vllm-0.32.0.tar vllm/vllm-openai:v0.32.0`，目标机 `docker load -i vllm-0.32.0.tar`。配置包、权重、镜像必须一起转移。下载目录 `.cache` 是下载元数据，可不传；其余模型文件保留。
-
-默认推理容器设置了 Hub 离线变量并只读挂载本地模型。它不代表操作系统级断网；FlashInfer/Triton 仍可能在首次启动获取或编译内核。真正隔离网部署应先在同样 GPU/镜像环境完成一次启动、验证，再导出需要的镜像与缓存；支持时在联网镜像阶段运行 `vllm download-kernels` 准备匹配的预编译内核。不要把不同版本内核缓存混用。[vLLM 内核缓存说明](https://docs.vllm.ai/en/latest/getting_started/installation/gpu/)
+镜像与内核采用 [离线部署操作手册](offline/README.md)：固定 digest 构建并运行 `vllm download-kernels`，在同类双卡环境用 `network_mode: none` 真实加载与生成，导出四类运行缓存；目标机核对归档和模型哈希后再次断网验收。仅 `docker save/load` 或设置 Hub 离线变量，不能证明首次启动不需要网络。通过前不把隔离环境部署标记为完成。[vLLM 内核缓存说明](https://docs.vllm.ai/en/v0.32.0/getting_started/installation/gpu/)
 
 ## 7. 自定义 API Key、监听 IP、端口及访问 URL
 
@@ -300,9 +303,7 @@ API_BASE_URL=http://192.168.10.20:18000/v1
 cd /opt/qwen38
 docker compose config --quiet
 docker compose pull
-docker image inspect vllm/vllm-openai:v0.32.0 \
-  --format '{{json .RepoDigests}}'
-# 记录镜像 digest；生产建议回填 VLLM_IMAGE，再进行后续步骤
+# 在线路径已使用 .env 中固定的镜像 digest；离线路径按 offline/README.md 操作
 bash preflight.sh
 docker compose run --rm --no-deps --entrypoint torchrun qwen \
   --standalone --nproc_per_node=2 /opt/qwen/nccl-check.py
@@ -312,7 +313,7 @@ docker compose logs -f --tail=100 qwen
 
 preflight 会实际在两卡执行 BF16 矩阵运算，并打印 vLLM/PyTorch/Transformers/CUDA 版本；仅能验证基础 CUDA，FP8 模型内核仍须实际加载验证。NCCL 检查必须在模型占用 GPU 之前执行，以验证双卡 all-reduce 结果和通信路径。
 
-默认性能参数在 `.env`：FP8 权重、TP=2、显存比例 0.90、上下文 16384、最多 2 个活跃序列、每调度轮最多 2048 tokens、Eager=1、Text Only=1、CPU offload=0。默认关闭 prefix caching，减少首次排错中的状态缓存变量。所有启动参数见 `launch.sh`，参数定义见 [vLLM 0.32.0 CLI](https://docs.vllm.ai/en/v0.32.0/cli/serve/)。
+默认性能参数在 `.env`：FP8 权重、TP=2、显存比例 0.90、上下文 16384、最多 2 个活跃序列、每调度轮最多 2048 tokens、EAGER=1、TEXT_ONLY=1、CPU_OFFLOAD_GB=0、PREFIX_CACHING=0。服务端通过 `MAX_OUTPUT_TOKENS=1024` 限制每个生成序列的输出预算，运行加等待最多 `MAX_NUM_QUEUED_REQS=8` 个 HTTP 请求，超出返回 503。默认 `ENABLE_THINKING=0`，SSE 空闲时每 `SSE_KEEP_ALIVE_INTERVAL=15` 秒发保活注释。所有启动参数见 `launch.sh`，参数定义见 [vLLM 0.32.0 CLI](https://docs.vllm.ai/en/v0.32.0/cli/serve/)。
 
 其中 `--dtype bfloat16` 控制非量化模块，不会把 FP8 权重自动展开成 BF16；FP8 由 checkpoint 内 `quantization_config` 识别，不需要额外 `--quantization fp8`。`max_model_len` 包含输入、聊天模板、历史消息与输出；`max_num_batched_tokens` 是调度预算，不是单个请求上下文上限。
 
@@ -416,7 +417,7 @@ curl --fail-with-body "$OPENAI_BASE_URL/chat/completions" \
 JSON
 ```
 
-初次验收关闭思考，避免有限的输出预算全用于 reasoning 而 `content` 为空。开启思考时设置 `enable_thinking=true`，合理增大输出预算，客户端同时处理 `reasoning`/`reasoning_content` 与最终 `content`；不要将 reasoning 文本当作最终答案。本包保留官方模板，未加入自行编写的角色拼接模板。[Qwen 官方 API 与思考控制说明](https://huggingface.co/Qwen/Qwen3.8-27B)
+初次验收关闭思考，避免有限的输出预算全用于 reasoning 而 `content` 为空。服务默认关闭思考，请求仍可通过 `enable_thinking=true` 覆盖默认值。需要更长思考输出时，运维先调整 `MAX_OUTPUT_TOKENS` 并重新验收容量，再增大请求输出预算；客户端同时处理 `reasoning`/`reasoning_content` 与最终 `content`；不要将 reasoning 文本当作最终答案。本包保留官方模板，未加入自行编写的角色拼接模板。[Qwen 官方 API 与思考控制说明](https://huggingface.co/Qwen/Qwen3.8-27B)
 
 ### 10.3 流式 SSE
 
@@ -460,7 +461,7 @@ python3 -m venv .client-venv
 每次只改变一类参数并记录结果，避免同时切换镜像、量化方式和并发，导致故障难以定位。
 
 1. **起步档（本包默认）**：官方 FP8、TP2、16K、2 序列、batched tokens 2048、显存比例 0.90、Eager=1、prefix caching 关闭。
-2. **性能档候选**：稳定后设 EAGER=0 启用编译/CUDA Graph，重测峰值显存。图捕获可能额外占用显存，若 OOM 先恢复 Eager。
+2. **性能档候选**：稳定后先单独设 EAGER=0 启用编译/CUDA Graph，重测峰值显存。再单独比较 PREFIX_CACHING=1；混合注意力状态缓存需验证当前模型/内核兼容性及冷热命中结果。图捕获可能额外占用显存，若 OOM 先恢复 Eager。
 3. **业务档候选**：先尝试 32K + 4 序列；batch tokens 可从 2048 到 4096，比较首 token 延迟与吞吐，再考虑 64K。不能只提高 `max_num_seqs` 就认为总吞吐一定增加。
 4. **长上下文**：128K/256K 和更多并发先做独立容量测试。必要时研究 FP8 KV，但它与模型 FP8 权重是两项独立变更，要确认 hybrid attention/SSM 状态的内核支持与长文质量；本包不默认启用。
 
@@ -486,7 +487,23 @@ curl --fail http://127.0.0.1:8000/metrics \
 
 建议业务验收矩阵：输入约 1K/8K/接近设定上限，输出 128/512/1024 tokens，并发 1/2/4（后者需已提高活跃序列参数）；每组重复多次，覆盖真实中文、长文、JSON 输出等负载。记录请求成功率、TTFT、端到端延迟 P50/P95、输出 tokens/s、显存峰值、排队和抢占情况。输入加输出必须在上限内。
 
-活跃序列数不是入站连接数上限，额外请求可能排队。若要可控拒绝、每用户配额或严格 SLA，应在网关增加请求限流和队列策略。Nginx 的超时只控制连接，不等价于 vLLM 的排队上限。
+默认最多 2 路同时生成，运行加等待最多 8 个请求；Nginx 入口超限返回 429，vLLM 容量阀超限返回 503。客户端做有限次数、带抖动的退避，避免自动无限重试。共享 Key 不区分用户，`max_tokens` 上限按每个生成序列计算；多候选 `n>1` 会额外消耗算力。对外多人业务应在网关限制 `n=1`、按用户分配 Key、记录配额并实施总时长预算。当前包未提供用户管理/计费网关。SSE 保活不计入答案 token，也不限制请求总耗时。
+
+“支持多少用户”取决于用户请求频率与可接受等待。2 路活跃不等于只能注册 2 个用户，也不等于可承诺 8 人同时快速回答；先按目标输入/输出和业务频率测出延迟与吞吐，再决定用户规模。
+
+用标准库压测工具记录真实 API 数据，先跑一轮预热，再分别测试本地与 FRP 公网 URL：
+
+```bash
+python3 benchmark.py --concurrency 1 --requests 1 --max-tokens 128
+python3 benchmark.py --concurrency 1 --requests 20 --max-tokens 256
+python3 benchmark.py --concurrency 2 --requests 20 --max-tokens 256
+python3 benchmark.py --concurrency 4 --requests 20 --max-tokens 256
+python3 benchmark.py --base-url https://llm.example.com/v1 \
+  --concurrency 2 --requests 20 --max-tokens 256
+# 长文场景另外加 --prompt-file /可信目录/代表性提示词.txt
+```
+
+并发 4 而活跃序列仍为 2 时，测到的是含排队的延迟；提高活跃序列应另建一组记录。结果包含成功率、TTFT 与端到端 P50/P95、聚合输出 tokens/s 和服务端报告的输入 token 数。保活/角色/思考片段不算首个答案，缺少 `[DONE]` 或空答案计为失败；服务端未返回 usage 时不估算 tokens/s。`--timeout` 是网络读超时，保活可能延长总请求耗时，严格总时长由业务网关/客户端管理。默认测试复用同一提示词，prefix caching 打开后须另测真实提示词分布，避免高命中率误导容量判断。
 
 本方案不提供未经实测的“每秒多少 token”承诺。PCIe 跨卡通信、输入长度、思考模式、并发与编译状态均会显著影响结果。
 
@@ -533,6 +550,8 @@ docker compose start
 docker compose up -d --force-recreate qwen
 ```
 
+可选的 [有限健康恢复](ops/README.md) 通过宿主机 timer 处理连续 unhealthy；需显式安装启用。Docker restart policy 本身不因 unhealthy 自动重启。恢复有冷却和每小时预算，维护前应暂停 timer，不能以无限重启替代诊断。
+
 生产升级前记录 `.env`（不包含 Key）、镜像 digest、模型 revision、硬件/驱动版本、权重 SHA256SUMS、业务验收结果和当前时延基线。Key 独立保管。新镜像先做 preflight、NCCL、鉴权、SSE 和真实业务测试，通过后再替换。
 
 回滚时恢复旧 `.env`、旧镜像 digest、旧完整模型目录与匹配脚本，然后重新创建容器。CPU offload、不同量化和 chat template 变更都应纳入回归。日常停止不需要删除 named volumes；不要为排错直接运行 `docker compose down -v` 清空缓存。
@@ -544,3 +563,13 @@ docker compose up -d --force-recreate qwen
 已按“内网主动连接云服务器”的方式补齐公网部署，详见 [FRP 公网部署方案](FRP公网部署方案.md)。默认只在云端开放 HTTPS 443、证书校验 80 和隧道入口 TCP 7000；云端业务映射口 18000 与内网模型 8000 均为回环监听。FRP v0.71.1 两端使用独立隧道 Token、TLS 服务端证书校验和 systemd 自动恢复，公网业务继续使用原模型 API Key。
 
 配置包未部署到真实公网环境。新增 Nginx 全局入口上限为 8 个对话 HTTP 请求，超过返回 429；该限制包含排队请求，不改变内网模型默认 2 路同时生成和每请求 16K 上下文。
+
+## 15. 已部署旧版本的迁移
+
+`init-config.sh` 保留现有 `.env` 与 Key，升级代码不会自动覆盖旧镜像设置。维护前保留旧源码提交、`.env`、旧模型目录和缓存备份，暂停 watchdog 与业务入口，再执行迁移：
+
+1. 对照 `.env.example`，将旧浮动镜像 tag 改为本次固定 digest；补齐输出、排队、默认思考、SSE 保活及性能开关。采用新默认值时为 `MAX_OUTPUT_TOKENS=1024`、`MAX_NUM_QUEUED_REQS=8`、`ENABLE_THINKING=0`、`SSE_KEEP_ALIVE_INTERVAL=15`、`PREFIX_CACHING=0`、`EAGER=1`。离线部署使用通过验收的本地不可变镜像 ID。
+2. 旧 schema v1 模型清单需要在联网下载环境用同 repo/revision 重跑新版下载脚本升级并重新验收；不同版本使用新目录。离线目标机转移升级后的完整清单与模型，不能手改 revision 绕过校验。
+3. 用 `validate_model.py --full-hash` 完成权重传输验收，再跑 Compose 配置、preflight、NCCL、鉴权与短生成。启动会检查模型身份和关键文件，失败时停止服务，修复完整模型后再启动。
+4. 重新创建容器，再验收本地与公网 SSE、长文及并发。请求 16K 上下文包含输出；默认输出上限为 1024，超额请求的实际行为与 finish_reason 一并检查。需要更长回答时先评估资源并调整服务端上限。
+5. 验收通过再恢复入口与 watchdog。若失败，回滚到完整旧版本配置/镜像/模型；不要只回退 `.env` 而保留不匹配的启动脚本或模型清单。
