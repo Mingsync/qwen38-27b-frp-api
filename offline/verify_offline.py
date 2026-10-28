@@ -7,6 +7,7 @@ from pathlib import Path
 import re
 import subprocess
 import time
+from datetime import datetime, timezone
 
 ROOT = Path(__file__).resolve().parents[1]
 PROJECT = 'qwen38-offline-check'
@@ -15,11 +16,17 @@ PROJECT = 'qwen38-offline-check'
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--image', required=True)
+    parser.add_argument('--bundle', required=True)
     parser.add_argument('--timeout', type=int, default=1800)
     args = parser.parse_args()
     if not re.fullmatch(r'(?:[^\s]+@)?sha256:[0-9a-f]{64}', args.image):
         parser.error('--image must be a registry digest or a local immutable image ID')
     env = dict(os.environ, VLLM_IMAGE=args.image)
+    bundle = Path(args.bundle)/'bundle.json'
+    manifest = json.loads(bundle.read_text())
+    actual_image = subprocess.check_output(['docker','image','inspect','--format','{{.Id}}',args.image],text=True).strip()
+    if actual_image != manifest['image_id']:
+        parser.error('Selected image does not match the offline bundle')
     command = ['docker','compose','--project-directory',str(ROOT),'-p',PROJECT,
                '-f',str(ROOT/'compose.yaml'),'-f',str(ROOT/'offline/compose.verify.yaml')]
     try:
@@ -50,7 +57,20 @@ with urllib.request.urlopen(req,timeout=300) as response:
 print('PASS: generation with network_mode=none')
 '''
         subprocess.run(command+['exec','-T','qwen','python3','-c',probe],env=env,check=True)
+        config = json.loads(subprocess.check_output(command+['config','--format','json'],env=env,text=True))
+        settings = config['services']['qwen']['environment']
+        manifest['gpu_offline_acceptance'] = {
+            'status':'passed','image_id':actual_image,
+            'model_id':settings['MODEL_ID'],'model_revision':settings['MODEL_REVISION'],
+            'time_utc':datetime.now(timezone.utc).isoformat(), 'network_mode':'none',
+        }
+        bundle.write_text(json.dumps(manifest,indent=2)+'\n')
         print('GPU offline acceptance passed; export this project\'s caches before transfer.')
+    except Exception:
+        manifest['gpu_offline_acceptance'] = {'status':'failed','image_id':actual_image}
+        bundle.write_text(json.dumps(manifest,indent=2)+'\n')
+        subprocess.run(command+['logs','--tail','80','qwen'],env=env,check=False)
+        raise
     finally:
         # Keep cache volumes for export. Never operates on the production project.
         subprocess.run(command+['down'],env=env,check=False)

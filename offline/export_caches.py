@@ -20,6 +20,9 @@ def main():
     directory=Path(args.bundle).resolve()
     path=directory/'bundle.json'
     manifest=json.loads(path.read_text())
+    proof=manifest.get('gpu_offline_acceptance',{})
+    if not isinstance(proof,dict) or proof.get('status')!='passed' or proof.get('image_id')!=manifest['image_id']:
+        raise RuntimeError('Run successful offline GPU acceptance for this image before exporting caches')
     if sha256(directory/'inference-image.tar') != manifest['image_sha256']:
         raise RuntimeError('Image archive checksum mismatch')
     mounts=[]
@@ -31,7 +34,6 @@ def main():
                     '--mount',f'type=bind,source={directory},target=/bundle',
                     manifest['image_id'],'-C','/cache','-czf','/bundle/runtime-cache.tar.gz','.'],check=True)
     manifest['cache_sha256']=sha256(directory/'runtime-cache.tar.gz')
-    # Exporting volumes alone is not proof that offline GPU acceptance passed.
     manifest['cache_source_project']='qwen38-offline-check'
     path.write_text(json.dumps(manifest,indent=2)+'\n')
     print('Saved cache archive and checksum. Preserve the separate offline acceptance log.')

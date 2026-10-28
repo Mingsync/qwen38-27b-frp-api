@@ -25,7 +25,7 @@ def main():
         parser.error('--output must be a new directory')
     output.mkdir(parents=True, mode=0o700)
     subprocess.run(['docker','build','--build-arg','BASE_IMAGE='+args.base_image,
-                    '-f',str(ROOT/'offline/Dockerfile'),'-t',args.tag,str(ROOT)],check=True)
+                    '-f',str(ROOT/'offline/Dockerfile'),'-t',args.tag,str(ROOT/'offline')],check=True)
     metadata = json.loads(subprocess.check_output(['docker','image','inspect',args.tag],text=True))[0]
     if metadata['Os'] != 'linux':
         raise RuntimeError('Expected Linux image')
