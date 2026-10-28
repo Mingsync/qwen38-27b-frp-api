@@ -21,6 +21,8 @@ services:
       DO_NOT_TRACK: "1"
       VLLM_ENGINE_READY_TIMEOUT_S: "1800"
       SERVED_MODEL_NAME: ${SERVED_MODEL_NAME:-qwen3.8-27b}
+      MODEL_ID: ${MODEL_ID:?Set MODEL_ID}
+      MODEL_REVISION: ${MODEL_REVISION:?Set MODEL_REVISION}
       TENSOR_PARALLEL_SIZE: ${TENSOR_PARALLEL_SIZE:-2}
       GPU_MEMORY_UTILIZATION: ${GPU_MEMORY_UTILIZATION:-0.90}
       MAX_MODEL_LEN: ${MAX_MODEL_LEN:-16384}
@@ -44,6 +46,7 @@ services:
         bind: {create_host_path: false}
       - ./launch.sh:/opt/qwen/launch.sh:ro
       - ./local_guard.py:/opt/qwen/local_guard.py:ro
+      - ./validate_model.py:/opt/qwen/validate_model.py:ro
       - ./nccl-check.py:/opt/qwen/nccl-check.py:ro
       - vllm_cache:/root/.cache/vllm
       - triton_cache:/root/.triton

@@ -6,6 +6,10 @@ nvidia-smi --query-gpu=index,name,driver_version,memory.total,memory.free --form
 nvidia-smi topo -m
 docker compose version
 docker compose config --quiet
+docker compose run --rm --no-deps --entrypoint python3 qwen \
+  /opt/qwen/validate_model.py --model-dir /model \
+  --repo "$(docker compose config --format json | python3 -c 'import json,sys; print(json.load(sys.stdin)["services"]["qwen"]["environment"]["MODEL_ID"])')" \
+  --revision "$(docker compose config --format json | python3 -c 'import json,sys; print(json.load(sys.stdin)["services"]["qwen"]["environment"]["MODEL_REVISION"])')"
 printf '%s\n' 'Container CUDA execution check'
 docker compose run --rm --no-deps --entrypoint python3 qwen -c '
 import importlib.metadata as m

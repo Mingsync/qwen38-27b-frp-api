@@ -10,6 +10,8 @@ if len(k) < 24 or any(c.isspace() for c in k) or not k.isascii():
     raise SystemExit('API key must contain at least 24 ASCII characters and no whitespace')
 PY
 [[ -s /model/config.json ]] || { echo 'Missing /model/config.json' >&2; exit 1; }
+python3 /opt/qwen/validate_model.py --model-dir /model \
+  --repo "${MODEL_ID:?Set MODEL_ID}" --revision "${MODEL_REVISION:?Set MODEL_REVISION}"
 python3 - <<'PY'
 import os
 for name, default, minimum in [('MAX_OUTPUT_TOKENS', '1024', 1),
