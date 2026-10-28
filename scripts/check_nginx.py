@@ -3,6 +3,7 @@
 import os
 from pathlib import Path
 import shutil
+import socket
 import subprocess
 import tempfile
 
@@ -24,6 +25,14 @@ def main():
                      'frp/cloud-nginx-bootstrap.conf','frp/cloud-nginx-https.conf']
         for name in templates:
             text = (ROOT/name).read_text()
+            # nginx -t also checks listening sockets. Use unprivileged loopback
+            # ports in CI instead of trying to bind public privileged ports.
+            for port in [80,443]:
+                with socket.socket() as listener:
+                    listener.bind(('127.0.0.1',0))
+                    test_port=listener.getsockname()[1]
+                text=text.replace(f'listen {port};',f'listen 127.0.0.1:{test_port};')
+                text=text.replace(f'listen {port} ssl;',f'listen 127.0.0.1:{test_port} ssl;')
             text = text.replace('/etc/nginx/snippets/qwen38-proxy.conf',str(snippet))
             text = text.replace('/etc/letsencrypt/live/llm.example.com/',str(temp)+'/')
             include = temp/'site.conf'
