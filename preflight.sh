@@ -25,7 +25,8 @@ print("CUDA BF16 execution passed on both cards; model/FP8/NCCL validation is st
 '
 printf '%s\n' 'Installed CLI parameters'
 docker compose run --rm --no-deps --entrypoint vllm qwen serve --help=all > /tmp/qwen38-vllm-help.txt
-for flag in --language-model-only --middleware --reasoning-parser --no-enable-prefix-caching; do
+for flag in --language-model-only --middleware --reasoning-parser --no-enable-prefix-caching \
+  --override-generation-config --max-num-queued-reqs --default-chat-template-kwargs --sse-keep-alive-interval; do
   if ! grep -q -- "$flag" /tmp/qwen38-vllm-help.txt; then
     printf 'Missing required CLI flag: %s\n' "$flag" >&2
     exit 1

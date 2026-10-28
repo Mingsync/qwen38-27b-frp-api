@@ -10,6 +10,19 @@ if len(k) < 24 or any(c.isspace() for c in k) or not k.isascii():
     raise SystemExit('API key must contain at least 24 ASCII characters and no whitespace')
 PY
 [[ -s /model/config.json ]] || { echo 'Missing /model/config.json' >&2; exit 1; }
+python3 - <<'PY'
+import os
+for name, default, minimum in [('MAX_OUTPUT_TOKENS', '1024', 1),
+                               ('MAX_NUM_QUEUED_REQS', '8', 1),
+                               ('SSE_KEEP_ALIVE_INTERVAL', '15', 0)]:
+    value = os.environ.get(name, default)
+    if not value.isascii() or not value.isdecimal() or int(value) < minimum:
+        raise SystemExit(f'Invalid {name}: expected integer >= {minimum}')
+if os.environ.get('ENABLE_THINKING', '0') not in ('0', '1'):
+    raise SystemExit('ENABLE_THINKING must be 0 or 1')
+PY
+thinking=false
+[[ "${ENABLE_THINKING:-0}" == 1 ]] && thinking=true
 args=(
   /model
   --served-model-name "${SERVED_MODEL_NAME:-qwen3.8-27b}"
@@ -25,6 +38,10 @@ args=(
   --enable-chunked-prefill
   --no-enable-prefix-caching
   --generation-config vllm
+  --override-generation-config "{\"max_new_tokens\":${MAX_OUTPUT_TOKENS:-1024}}"
+  --max-num-queued-reqs "${MAX_NUM_QUEUED_REQS:-8}"
+  --default-chat-template-kwargs "{\"enable_thinking\":$thinking}"
+  --sse-keep-alive-interval "${SSE_KEEP_ALIVE_INTERVAL:-15}"
   --reasoning-parser qwen3
   --middleware local_guard.LocalApiGuard
   --disable-fastapi-docs
