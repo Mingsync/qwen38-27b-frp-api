@@ -1,0 +1,7 @@
+services:
+  qwen:
+    # Separate project name is mandatory when running the verification helper.
+    # No published ports and no external network, including DNS/download access.
+    network_mode: none
+    ports: !reset []
+    pull_policy: never

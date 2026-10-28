@@ -50,6 +50,8 @@ services:
       - ./nccl-check.py:/opt/qwen/nccl-check.py:ro
       - vllm_cache:/root/.cache/vllm
       - triton_cache:/root/.triton
+      - flashinfer_cache:/root/.cache/flashinfer
+      - torch_cache:/root/.cache/torch
     secrets:
       - qwen_api_key
     deploy:
@@ -74,3 +76,5 @@ secrets:
 volumes:
   vllm_cache:
   triton_cache:
+  flashinfer_cache:
+  torch_cache:
