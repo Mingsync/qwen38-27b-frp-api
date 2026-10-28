@@ -33,7 +33,7 @@ FP8 服务在客户端统一使用别名 `qwen3.8-27b`。API 请求的 `model` �
 
 ## 2. 硬件与显存评估
 
-### 2.1 双卡不是一张自动共享的 64GB 显卡
+### 2.1 双卡RTX 5090
 
 RTX 5090 的参考规格为每卡 32GB GDDR7、计算能力 12.0、无 NVLink，参考总显卡功耗 575W。两卡间通信走 PCIe/可用的 NCCL 传输路径；PCIe 插槽布局、主板 ACS/IOMMU、跨 CPU 插槽连接及 P2P 可用性都会影响 TP=2 的吞吐与延迟。[NVIDIA RTX 5090 规格](https://www.nvidia.com/en-us/geforce/graphics-cards/50-series/rtx-5090/)
 
