@@ -17,8 +17,9 @@
     "All cases use synthetic repeated Chinese retrieval material.",
     "Each capacity row is one burst. The initial 128k-c2 uses a separate 0.90 memory profile.",
     "The m95 long cases were collected before automatic tool choice was enabled. The m95 512-token cases were collected after enabling qwen3_coder.",
-    "A small amount of other LAN client traffic was observed during the short-input test period. The host was not completely isolated.",
-    "max_generation_overlap is derived from only the recorded successful test streams. Exporter pressure samples can also include other clients."
+    "A small amount of other LAN client traffic was observed during the short-input test period and the final profile acceptance. The host was not completely isolated.",
+    "max_generation_overlap is derived from only the recorded successful test streams. Exporter pressure samples can also include other clients.",
+    "overload-c129 is an intentional overload test against a running-plus-waiting limit of 128. Its single HTTP 503 is expected."
   ],
   "measurements": [
     {
@@ -8553,6 +8554,2187 @@
       "prompt_tokens_observed": [
         8184
       ]
+    },
+    {
+      "name": "final-256k-c1",
+      "case_context": 262144,
+      "prompt_tokens_expected": 261108,
+      "concurrency": 1,
+      "requests": 1,
+      "successful": 1,
+      "failed": 0,
+      "wall_seconds": 244.1141441061627,
+      "output_budget": 1024,
+      "force_length": true,
+      "max_generation_overlap": 1,
+      "marker_checks_passed": 1,
+      "telemetry": {
+        "peak_running": 2.0,
+        "peak_waiting": 0.0,
+        "peak_kv_usage_fraction": 0.5489891135303266,
+        "preemption_counter_reset": false,
+        "preemptions_delta": 0.0,
+        "peak_gpu_memory_mib": [
+          31522.0,
+          31506.0
+        ],
+        "peak_gpu_temperature_c": [
+          51.0,
+          55.0
+        ]
+      },
+      "monitoring_errors": [],
+      "results": [
+        {
+          "ttft_seconds": 156.93699645600282,
+          "elapsed_seconds": 244.11277675814927,
+          "completion_tokens": 1024,
+          "prompt_tokens": 261108,
+          "first_answer_at": 1113985.102271966,
+          "finished_at": 1114072.278052268,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\nALPHA7319\nBETA4826\nGAMMA9561\nALPHA7319\nBETA4826\nGAMMA9561\nALPHA7319\nBETA4826\nGAMMA9561\nALPHA7319\nBETA4826\nGAMMA9561\nALPHA7319\nBETA4"
+        }
+      ],
+      "server_profile": {
+        "GPU_MEMORY_UTILIZATION": "0.95",
+        "MAX_MODEL_LEN": "262144",
+        "MAX_NUM_SEQS": "64",
+        "MAX_NUM_BATCHED_TOKENS": "2048",
+        "MAX_NUM_QUEUED_REQS": "128",
+        "EAGER": "1",
+        "PREFIX_CACHING": "0",
+        "OMP_NUM_THREADS": "8"
+      },
+      "ttft_seconds": {
+        "p50": 156.93699645600282,
+        "p95": 156.93699645600282
+      },
+      "elapsed_seconds": {
+        "p50": 244.11277675814927,
+        "p95": 244.11277675814927
+      },
+      "aggregate_output_tokens_per_second": 4.1947589876425715,
+      "prompt_tokens_observed": [
+        261108
+      ]
+    },
+    {
+      "name": "final-128k-c3",
+      "case_context": 131072,
+      "prompt_tokens_expected": 130047,
+      "concurrency": 3,
+      "requests": 3,
+      "successful": 3,
+      "failed": 0,
+      "wall_seconds": 246.93377267802134,
+      "output_budget": 512,
+      "force_length": true,
+      "max_generation_overlap": 3,
+      "marker_checks_passed": 3,
+      "telemetry": {
+        "peak_running": 5.0,
+        "peak_waiting": 3.0,
+        "peak_kv_usage_fraction": 0.8413685847589425,
+        "preemption_counter_reset": false,
+        "preemptions_delta": 0.0,
+        "peak_gpu_memory_mib": [
+          31562.0,
+          31546.0
+        ],
+        "peak_gpu_temperature_c": [
+          49.0,
+          53.0
+        ]
+      },
+      "monitoring_errors": [],
+      "results": [
+        {
+          "ttft_seconds": 67.89539484493434,
+          "elapsed_seconds": 235.5773528618738,
+          "completion_tokens": 512,
+          "prompt_tokens": 130047,
+          "first_answer_at": 1114142.247136632,
+          "finished_at": 1114309.929094649,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\nALPHA7319\nBETA4826\nGAMMA9561\nALPHA7319\nBETA4826\nGAMMA9561\nALPHA7319\nBETA4826\nGAMMA9561\nALPHA7319\nBETA4826\nGAMMA9561\nALPHA7319\nBETA4"
+        },
+        {
+          "ttft_seconds": 209.42028492479585,
+          "elapsed_seconds": 246.92998203681782,
+          "completion_tokens": 512,
+          "prompt_tokens": 130047,
+          "first_answer_at": 1114283.772765705,
+          "finished_at": 1114321.282462817,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\nALPHA7319\nBETA4826\nGAMMA9561\nALPHA7319\nBETA4826\nGAMMA9561\nALPHA7319\nBETA4826\nGAMMA9561\nALPHA7319\nBETA4826\nGAMMA9561\nALPHA7319\nBETA4"
+        },
+        {
+          "ttft_seconds": 139.14400557707995,
+          "elapsed_seconds": 238.39219692000188,
+          "completion_tokens": 512,
+          "prompt_tokens": 130047,
+          "first_answer_at": 1114213.495240923,
+          "finished_at": 1114312.743432266,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\nALPHA7319\nBETA4826\nGAMMA9561\nALPHA7319\nBETA4826\nGAMMA9561\nALPHA7319\nBETA4826\nGAMMA9561\nALPHA7319\nBETA4826\nGAMMA9561\nALPHA7319\nBETA4"
+        }
+      ],
+      "server_profile": {
+        "GPU_MEMORY_UTILIZATION": "0.95",
+        "MAX_MODEL_LEN": "262144",
+        "MAX_NUM_SEQS": "64",
+        "MAX_NUM_BATCHED_TOKENS": "2048",
+        "MAX_NUM_QUEUED_REQS": "128",
+        "EAGER": "1",
+        "PREFIX_CACHING": "0",
+        "OMP_NUM_THREADS": "8"
+      },
+      "ttft_seconds": {
+        "p50": 139.14400557707995,
+        "p95": 202.39265699002425
+      },
+      "elapsed_seconds": {
+        "p50": 238.39219692000188,
+        "p95": 246.07620352513624
+      },
+      "aggregate_output_tokens_per_second": 6.220291308644934,
+      "prompt_tokens_observed": [
+        130047
+      ]
+    },
+    {
+      "name": "final-short-c64",
+      "case_context": 512,
+      "prompt_tokens_expected": 498,
+      "concurrency": 64,
+      "requests": 64,
+      "successful": 64,
+      "failed": 0,
+      "wall_seconds": 70.59883007290773,
+      "output_budget": 1024,
+      "force_length": true,
+      "max_generation_overlap": 64,
+      "marker_checks_passed": 64,
+      "telemetry": {
+        "peak_running": 64.0,
+        "peak_waiting": 58.0,
+        "peak_kv_usage_fraction": 0.4976671850699844,
+        "preemption_counter_reset": false,
+        "preemptions_delta": 0.0,
+        "peak_gpu_memory_mib": [
+          31568.0,
+          31552.0
+        ],
+        "peak_gpu_temperature_c": [
+          43.0,
+          46.0
+        ]
+      },
+      "monitoring_errors": [],
+      "results": [
+        {
+          "ttft_seconds": 14.470971968024969,
+          "elapsed_seconds": 70.40763199795038,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114337.836009461,
+          "finished_at": 1114393.772669491,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 6.423132830997929,
+          "elapsed_seconds": 70.01707958010957,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114329.784335563,
+          "finished_at": 1114393.378282312,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 11.780457951128483,
+          "elapsed_seconds": 70.27208211296238,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114335.143153852,
+          "finished_at": 1114393.634778014,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 15.370526944985613,
+          "elapsed_seconds": 70.45256733591668,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114338.734894559,
+          "finished_at": 1114393.81693495,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 8.205187934916466,
+          "elapsed_seconds": 70.10147136403248,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114331.56884326,
+          "finished_at": 1114393.465126689,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 17.16660946398042,
+          "elapsed_seconds": 70.53977433405817,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114340.533071176,
+          "finished_at": 1114393.906236046,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 17.691026547923684,
+          "elapsed_seconds": 70.58349603111856,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114341.057968526,
+          "finished_at": 1114393.950438009,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 17.690588599070907,
+          "elapsed_seconds": 70.58309373795055,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114341.058011769,
+          "finished_at": 1114393.950516908,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 9.991923967842013,
+          "elapsed_seconds": 70.18311501503922,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114333.353285974,
+          "finished_at": 1114393.544477021,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 16.26655810698867,
+          "elapsed_seconds": 70.49575162585825,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114339.632575391,
+          "finished_at": 1114393.86176891,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 9.989585935836658,
+          "elapsed_seconds": 70.18068886292167,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114333.353335718,
+          "finished_at": 1114393.544438645,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 14.470434921095148,
+          "elapsed_seconds": 70.40691993408836,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114337.836039683,
+          "finished_at": 1114393.772524696,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 15.36860646493733,
+          "elapsed_seconds": 70.4505573718343,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114338.734875231,
+          "finished_at": 1114393.816826138,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 5.531296760076657,
+          "elapsed_seconds": 69.96870010509156,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114328.894068599,
+          "finished_at": 1114393.331471944,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 9.095596838044003,
+          "elapsed_seconds": 70.1381216798909,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114332.460256135,
+          "finished_at": 1114393.502780977,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 12.675370352109894,
+          "elapsed_seconds": 70.32163638505153,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114336.038672304,
+          "finished_at": 1114393.684938337,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 9.988891490967944,
+          "elapsed_seconds": 70.17963022994809,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114333.35366854,
+          "finished_at": 1114393.544407279,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 10.885668708011508,
+          "elapsed_seconds": 70.22708237101324,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114334.248576001,
+          "finished_at": 1114393.589989664,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 6.422595191048458,
+          "elapsed_seconds": 70.01699129585177,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114329.784046627,
+          "finished_at": 1114393.378442732,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 15.371024845866486,
+          "elapsed_seconds": 70.45328466594219,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114338.734909108,
+          "finished_at": 1114393.817168928,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 15.371077697025612,
+          "elapsed_seconds": 70.45322237396613,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114338.734918776,
+          "finished_at": 1114393.817063453,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 4.641960388980806,
+          "elapsed_seconds": 69.91720898915082,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114328.004816915,
+          "finished_at": 1114393.280065515,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 9.988516355864704,
+          "elapsed_seconds": 70.17947738594376,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114333.353405271,
+          "finished_at": 1114393.544366301,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 5.532531306846067,
+          "elapsed_seconds": 69.96986560896039,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114328.894094562,
+          "finished_at": 1114393.331428864,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 7.313562358031049,
+          "elapsed_seconds": 70.06033559911884,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114330.676167408,
+          "finished_at": 1114393.422940649,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 16.2708875448443,
+          "elapsed_seconds": 70.50006563588977,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114339.63253145,
+          "finished_at": 1114393.861709541,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 8.204941011033952,
+          "elapsed_seconds": 70.10123120294884,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114331.568868793,
+          "finished_at": 1114393.465158985,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 5.531164578860626,
+          "elapsed_seconds": 69.9685977420304,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114328.894160271,
+          "finished_at": 1114393.331593434,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 13.57673238683492,
+          "elapsed_seconds": 70.3680608428549,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114336.93846005,
+          "finished_at": 1114393.729788506,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 8.204926931066439,
+          "elapsed_seconds": 70.1015192118939,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114331.568896281,
+          "finished_at": 1114393.465488562,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 10.886589340865612,
+          "elapsed_seconds": 70.2282151679974,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114334.248397393,
+          "finished_at": 1114393.59002322,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 10.885303715011105,
+          "elapsed_seconds": 70.22706378810108,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114334.248355592,
+          "finished_at": 1114393.590115665,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 12.676769174169749,
+          "elapsed_seconds": 70.32277627219446,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114336.038734022,
+          "finished_at": 1114393.68474112,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 5.532224606024101,
+          "elapsed_seconds": 69.96967419609427,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114328.894111905,
+          "finished_at": 1114393.331561495,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 13.57451422791928,
+          "elapsed_seconds": 70.36583175696433,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114336.938527566,
+          "finished_at": 1114393.729845095,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 4.642581502906978,
+          "elapsed_seconds": 69.9178140501026,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114328.004703479,
+          "finished_at": 1114393.279936026,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 14.470954589080065,
+          "elapsed_seconds": 70.40738219814375,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114337.835943199,
+          "finished_at": 1114393.772370808,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 10.885329495184124,
+          "elapsed_seconds": 70.2269464051351,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114334.248472785,
+          "finished_at": 1114393.590089695,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 8.204867107095197,
+          "elapsed_seconds": 70.1011295011267,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114331.568924996,
+          "finished_at": 1114393.46518739,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 13.573132239980623,
+          "elapsed_seconds": 70.36434813705273,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114336.938493135,
+          "finished_at": 1114393.729709032,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 17.167355756973848,
+          "elapsed_seconds": 70.54068027995527,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114340.533050604,
+          "finished_at": 1114393.906375127,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 6.4218765089754015,
+          "elapsed_seconds": 70.01608296786435,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114329.784116355,
+          "finished_at": 1114393.378322814,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 17.16839883918874,
+          "elapsed_seconds": 70.5423995621968,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114340.53251679,
+          "finished_at": 1114393.906517513,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 9.09726034104824,
+          "elapsed_seconds": 70.13953602686524,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114332.460449224,
+          "finished_at": 1114393.50272491,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 4.6423781958874315,
+          "elapsed_seconds": 69.91768744494766,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114328.004671481,
+          "finished_at": 1114393.27998073,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 11.778057046001777,
+          "elapsed_seconds": 70.26963938307017,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114335.143174323,
+          "finished_at": 1114393.63475666,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 7.312830385984853,
+          "elapsed_seconds": 70.05938919191249,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114330.676221662,
+          "finished_at": 1114393.422780468,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 12.673103481065482,
+          "elapsed_seconds": 70.31959572713822,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114336.038325663,
+          "finished_at": 1114393.684817909,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 6.421874644933268,
+          "elapsed_seconds": 70.01604517386295,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114329.784220319,
+          "finished_at": 1114393.378390848,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 11.778900220990181,
+          "elapsed_seconds": 70.2705272140447,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114335.143103661,
+          "finished_at": 1114393.634730654,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 9.095671194139868,
+          "elapsed_seconds": 70.13847757107578,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114332.459951892,
+          "finished_at": 1114393.502758269,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 7.312744945054874,
+          "elapsed_seconds": 70.05937604699284,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114330.676190316,
+          "finished_at": 1114393.422821418,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 12.672719931928441,
+          "elapsed_seconds": 70.31901562493294,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114336.038491668,
+          "finished_at": 1114393.684787361,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 4.6423629249911755,
+          "elapsed_seconds": 69.91771872108802,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114328.004762339,
+          "finished_at": 1114393.280118135,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 13.573948038043454,
+          "elapsed_seconds": 70.36512186098844,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114336.93840969,
+          "finished_at": 1114393.729583513,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 17.691446922020987,
+          "elapsed_seconds": 70.58402315317653,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114341.058074524,
+          "finished_at": 1114393.950650755,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 9.09609657805413,
+          "elapsed_seconds": 70.13834523106925,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114332.460636958,
+          "finished_at": 1114393.502885611,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 16.266713054152206,
+          "elapsed_seconds": 70.49610573006794,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114339.632554745,
+          "finished_at": 1114393.861947421,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 11.780801628017798,
+          "elapsed_seconds": 70.27235825988464,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114335.143247798,
+          "finished_at": 1114393.63480443,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 16.266342465067282,
+          "elapsed_seconds": 70.49564372003078,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114339.632544544,
+          "finished_at": 1114393.861845799,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 0.264642114052549,
+          "elapsed_seconds": 69.81592226796784,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114323.627134077,
+          "finished_at": 1114393.178414231,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\n\nALPHA7319\nBETA4826\nGAMMA9561\nALPHA7319\nBETA4826\nGAMMA9561\nALPHA7319\nBETA4826\nGAMMA9561\nALPHA7319\nBETA4826\nGAMMA9561\nALPHA7319\nBET"
+        },
+        {
+          "ttft_seconds": 14.470464937854558,
+          "elapsed_seconds": 70.4072348549962,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114337.835977072,
+          "finished_at": 1114393.772746989,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 7.312588725006208,
+          "elapsed_seconds": 70.05936158215627,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114330.676122713,
+          "finished_at": 1114393.42289557,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 17.17204531817697,
+          "elapsed_seconds": 70.5455328351818,
+          "completion_tokens": 1024,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114340.533095105,
+          "finished_at": 1114393.906582622,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        }
+      ],
+      "server_profile": {
+        "GPU_MEMORY_UTILIZATION": "0.95",
+        "MAX_MODEL_LEN": "262144",
+        "MAX_NUM_SEQS": "64",
+        "MAX_NUM_BATCHED_TOKENS": "2048",
+        "MAX_NUM_QUEUED_REQS": "128",
+        "EAGER": "1",
+        "PREFIX_CACHING": "0",
+        "OMP_NUM_THREADS": "8"
+      },
+      "ttft_seconds": {
+        "p50": 10.88612902443856,
+        "p95": 17.171498346328736
+      },
+      "elapsed_seconds": {
+        "p50": 70.22764876950532,
+        "p95": 70.54506284423405
+      },
+      "aggregate_output_tokens_per_second": 928.2873375142432,
+      "prompt_tokens_observed": [
+        498
+      ]
+    },
+    {
+      "name": "overload-c129",
+      "case_context": 512,
+      "prompt_tokens_expected": 498,
+      "concurrency": 129,
+      "requests": 129,
+      "successful": 128,
+      "failed": 1,
+      "wall_seconds": 40.936835325090215,
+      "output_budget": 128,
+      "force_length": true,
+      "max_generation_overlap": 64,
+      "marker_checks_passed": 128,
+      "telemetry": {
+        "peak_running": 64.0,
+        "peak_waiting": 122.0,
+        "peak_kv_usage_fraction": 0.39813374805598756,
+        "preemption_counter_reset": false,
+        "preemptions_delta": 0.0,
+        "peak_gpu_memory_mib": [
+          31568.0,
+          31552.0
+        ],
+        "peak_gpu_temperature_c": [
+          39.0,
+          41.0
+        ]
+      },
+      "monitoring_errors": [],
+      "results": [
+        {
+          "ttft_seconds": 2.1259087829384953,
+          "elapsed_seconds": 20.285778699908406,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114526.217795959,
+          "finished_at": 1114544.377665876,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 0.3288043800275773,
+          "elapsed_seconds": 19.916769966017455,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114524.410675138,
+          "finished_at": 1114543.998640724,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\n\nALPHA7319\nBETA4826\nGAMMA9561\nALPHA7319\nBETA4826\nGAMMA9561\nALPHA7319\nBETA4826\nGAMMA9561\nALPHA7319\nBETA4826\nGAMMA9561\nALPHA7319\nBET"
+        },
+        {
+          "ttft_seconds": 2.130966516910121,
+          "elapsed_seconds": 20.290820863097906,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114526.217861791,
+          "finished_at": 1114544.377716137,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 11.067779998993501,
+          "elapsed_seconds": 29.2933859040495,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114535.150151609,
+          "finished_at": 1114553.375757514,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 3.9119307990185916,
+          "elapsed_seconds": 22.092431847006083,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114527.997353547,
+          "finished_at": 1114546.177854595,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 9.257639841875061,
+          "elapsed_seconds": 27.47824741504155,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114533.354955345,
+          "finished_at": 1114551.575562918,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 1.2463068389333785,
+          "elapsed_seconds": 20.246881186030805,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114525.329105953,
+          "finished_at": 1114544.3296803,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 11.961920801084489,
+          "elapsed_seconds": 30.188941723201424,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114536.049114686,
+          "finished_at": 1114554.276135608,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 3.909948722226545,
+          "elapsed_seconds": 22.09051076020114,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114527.997383193,
+          "finished_at": 1114546.177945231,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 22.963185440050438,
+          "elapsed_seconds": 40.281742237042636,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114547.077667681,
+          "finished_at": 1114564.396224478,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 3.0221673741471022,
+          "elapsed_seconds": 21.197738173184916,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114527.105390222,
+          "finished_at": 1114545.280961021,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 4.798619117820635,
+          "elapsed_seconds": 22.98920035501942,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114528.88726887,
+          "finished_at": 1114547.077850107,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 11.056012463057414,
+          "elapsed_seconds": 29.281583049101755,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114535.150214521,
+          "finished_at": 1114553.375785107,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 28.384690240956843,
+          "elapsed_seconds": 40.5675522540696,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114552.475864518,
+          "finished_at": 1114564.658726531,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 3.0216809809207916,
+          "elapsed_seconds": 21.197308132890612,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114527.105242997,
+          "finished_at": 1114545.280870149,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 8.371526103001088,
+          "elapsed_seconds": 26.588986468035728,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114532.459309037,
+          "finished_at": 1114550.676769402,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 13.765012705000117,
+          "elapsed_seconds": 31.99033346096985,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114537.848874157,
+          "finished_at": 1114556.074194913,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 1.244729493977502,
+          "elapsed_seconds": 20.24540485488251,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114525.328927664,
+          "finished_at": 1114544.329603025,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 13.756021450040862,
+          "elapsed_seconds": 31.98132076812908,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114537.848907827,
+          "finished_at": 1114556.074207145,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 13.751860294025391,
+          "elapsed_seconds": 31.977198343956843,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114537.848841968,
+          "finished_at": 1114556.074180018,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 1.2408712019678205,
+          "elapsed_seconds": 20.241456374060363,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114525.329033163,
+          "finished_at": 1114544.329618335,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 2.125471559120342,
+          "elapsed_seconds": 20.285516719100997,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114526.217748766,
+          "finished_at": 1114544.377793926,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 4.802704706089571,
+          "elapsed_seconds": 22.993213692912832,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114528.887251862,
+          "finished_at": 1114547.077760849,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 4.802703866967931,
+          "elapsed_seconds": 22.99287102604285,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114528.887576092,
+          "finished_at": 1114547.077743251,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 5.690332576166838,
+          "elapsed_seconds": 23.888956600101665,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114529.778723909,
+          "finished_at": 1114547.977347933,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 6.5766740997787565,
+          "elapsed_seconds": 24.78526685386896,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114530.671244247,
+          "finished_at": 1114548.879837001,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 12.843629671959206,
+          "elapsed_seconds": 31.072369998088107,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114536.945855412,
+          "finished_at": 1114555.174595738,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 3.911291431868449,
+          "elapsed_seconds": 22.091825986048207,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114527.997290108,
+          "finished_at": 1114546.177824662,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 5.686247977195308,
+          "elapsed_seconds": 23.884837181074545,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114529.778789126,
+          "finished_at": 1114547.97737833,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 4.793609057087451,
+          "elapsed_seconds": 22.98386338003911,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114528.887523014,
+          "finished_at": 1114547.077777337,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 12.856996673857793,
+          "elapsed_seconds": 31.085687516024336,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114536.945878276,
+          "finished_at": 1114555.174569118,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 6.57527504907921,
+          "elapsed_seconds": 24.784299632068723,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114530.670739938,
+          "finished_at": 1114548.879764521,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 31.96188405691646,
+          "elapsed_seconds": 40.729271173942834,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114556.074121146,
+          "finished_at": 1114564.841508263,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 11.945878329919651,
+          "elapsed_seconds": 30.172896827803925,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114536.049057625,
+          "finished_at": 1114554.276076123,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 5.689872029935941,
+          "elapsed_seconds": 23.88815172202885,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114529.779081679,
+          "finished_at": 1114547.977361371,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 29.263733151834458,
+          "elapsed_seconds": 40.592781729996204,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114553.375691722,
+          "finished_at": 1114564.7047403,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 22.96503795008175,
+          "elapsed_seconds": 40.28325935197063,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114547.077705184,
+          "finished_at": 1114564.395926586,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 22.963734960881993,
+          "elapsed_seconds": 40.281991221010685,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114547.077694146,
+          "finished_at": 1114564.395950406,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 9.264850305859,
+          "elapsed_seconds": 27.485459823859856,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114533.354970475,
+          "finished_at": 1114551.575579993,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 11.060668671969324,
+          "elapsed_seconds": 29.28625662298873,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114535.150184684,
+          "finished_at": 1114553.375772635,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 5.689012121874839,
+          "elapsed_seconds": 23.887508244020864,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114529.778832536,
+          "finished_at": 1114547.977328658,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 21.166991350939497,
+          "elapsed_seconds": 40.18809687788598,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114545.280798042,
+          "finished_at": 1114564.301903569,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 6.5802672621794045,
+          "elapsed_seconds": 24.789334467146546,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114530.670712863,
+          "finished_at": 1114548.879780068,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 9.2536578879226,
+          "elapsed_seconds": 27.474544587079436,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114533.354748559,
+          "finished_at": 1114551.575635258,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 6.577643516007811,
+          "elapsed_seconds": 24.786520185880363,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114530.670915455,
+          "finished_at": 1114548.879792125,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 11.947760086040944,
+          "elapsed_seconds": 30.174828140996397,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114536.049086451,
+          "finished_at": 1114554.276154506,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 1.2382231240626425,
+          "elapsed_seconds": 20.23885610490106,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114525.328997828,
+          "finished_at": 1114544.329630809,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 12.85213586105965,
+          "elapsed_seconds": 31.080978820100427,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114536.945741001,
+          "finished_at": 1114555.17458396,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 7.463666890980676,
+          "elapsed_seconds": 25.676708391867578,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114531.564530956,
+          "finished_at": 1114549.777572457,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 34.46887242887169,
+          "elapsed_seconds": 40.869311450980604,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114558.576409095,
+          "finished_at": 1114564.976848117,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 7.46182690304704,
+          "elapsed_seconds": 25.674839667975903,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114531.564585692,
+          "finished_at": 1114549.777598457,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 11.050911910831928,
+          "elapsed_seconds": 29.276574889896438,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114535.150242423,
+          "finished_at": 1114553.375905402,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 3.9015404670499265,
+          "elapsed_seconds": 22.082054728874937,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114527.997325648,
+          "finished_at": 1114546.17783991,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 31.060285404790193,
+          "elapsed_seconds": 40.68192177196033,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114555.174513111,
+          "finished_at": 1114564.796149478,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 7.464898820966482,
+          "elapsed_seconds": 25.677910670870915,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114531.564542867,
+          "finished_at": 1114549.777554717,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 11.953847820172086,
+          "elapsed_seconds": 30.180869966046885,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114536.049022986,
+          "finished_at": 1114554.276045132,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 22.065645735012367,
+          "elapsed_seconds": 40.237172764958814,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114546.1778013,
+          "finished_at": 1114564.34932833,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 24.76649533607997,
+          "elapsed_seconds": 40.367589432979,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114548.879735849,
+          "finished_at": 1114564.480829946,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 9.255248930072412,
+          "elapsed_seconds": 27.475684326142073,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114533.355158641,
+          "finished_at": 1114551.575594037,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 25.671110403025523,
+          "elapsed_seconds": 40.41521593183279,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114549.777465091,
+          "finished_at": 1114564.52157062,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 3.0104022619780153,
+          "elapsed_seconds": 21.185982011957094,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114527.105266825,
+          "finished_at": 1114545.280846575,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 27.460741284070536,
+          "elapsed_seconds": 40.498997922986746,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114551.575480221,
+          "finished_at": 1114564.61373686,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 34.460608021123335,
+          "elapsed_seconds": 40.86106124706566,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114558.57637633,
+          "finished_at": 1114564.976829556,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 26.56161155598238,
+          "elapsed_seconds": 40.45277179614641,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114550.676596809,
+          "finished_at": 1114564.567757049,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 7.463959075976163,
+          "elapsed_seconds": 25.676938106073067,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114531.564606533,
+          "finished_at": 1114549.777585563,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 13.748726931167766,
+          "elapsed_seconds": 31.97408135700971,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114537.848937177,
+          "finished_at": 1114556.074291603,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 10.149029599968344,
+          "elapsed_seconds": 28.371771346079186,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114534.253148493,
+          "finished_at": 1114552.475890239,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 8.36307735205628,
+          "elapsed_seconds": 26.58056152309291,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114532.459188058,
+          "finished_at": 1114550.676672229,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 32.8864551729057,
+          "elapsed_seconds": 40.80055636889301,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114556.972688874,
+          "finished_at": 1114564.88679007,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 31.05966935493052,
+          "elapsed_seconds": 40.681171021889895,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114555.174485202,
+          "finished_at": 1114564.795986869,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 31.96201271098107,
+          "elapsed_seconds": 40.72921910486184,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114556.074093884,
+          "finished_at": 1114564.841300278,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 28.363452423829585,
+          "elapsed_seconds": 40.54632982495241,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114552.475788249,
+          "finished_at": 1114564.65866565,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 14.264928088057786,
+          "elapsed_seconds": 32.86480954894796,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114538.372914782,
+          "finished_at": 1114556.972796243,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 21.17409213911742,
+          "elapsed_seconds": 40.19523534504697,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114545.280714946,
+          "finished_at": 1114564.301858152,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 30.164858110947534,
+          "elapsed_seconds": 40.6394296111539,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114554.275897998,
+          "finished_at": 1114564.750469498,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 10.149712880840525,
+          "elapsed_seconds": 28.372475819895044,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114534.253111251,
+          "finished_at": 1114552.47587419,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 22.96417664620094,
+          "elapsed_seconds": 40.282928329193965,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114547.077681868,
+          "finished_at": 1114564.396433551,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 30.16675017797388,
+          "elapsed_seconds": 40.641424058005214,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114554.275927569,
+          "finished_at": 1114564.750601449,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 21.166894895024598,
+          "elapsed_seconds": 40.18798737600446,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114545.280780395,
+          "finished_at": 1114564.301872876,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 26.566495305858552,
+          "elapsed_seconds": 40.45764511800371,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114550.676638861,
+          "finished_at": 1114564.567788673,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "error": "ValueError",
+          "status": null,
+          "elapsed_seconds": 0.2689720580819994
+        },
+        {
+          "ttft_seconds": 23.867334431037307,
+          "elapsed_seconds": 40.32976890611462,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114547.977264554,
+          "finished_at": 1114564.439699029,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 33.75526169780642,
+          "elapsed_seconds": 40.81574726384133,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114557.870936802,
+          "finished_at": 1114564.931422368,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 27.467228240100667,
+          "elapsed_seconds": 40.505520375911146,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114551.575504162,
+          "finished_at": 1114564.613796298,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 31.060438482789323,
+          "elapsed_seconds": 40.68201039289124,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114555.174498211,
+          "finished_at": 1114564.796070121,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 10.148551316000521,
+          "elapsed_seconds": 28.37127084704116,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114534.253181905,
+          "finished_at": 1114552.475901436,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 31.961241060867906,
+          "elapsed_seconds": 40.72853808081709,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114556.074131385,
+          "finished_at": 1114564.841428405,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 12.842284571146592,
+          "elapsed_seconds": 31.07087689405307,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114536.946016116,
+          "finished_at": 1114555.174608439,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 23.863171966047958,
+          "elapsed_seconds": 40.325671596918255,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114547.97727806,
+          "finished_at": 1114564.439777691,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 8.354751290986314,
+          "elapsed_seconds": 26.57224240503274,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114532.459163916,
+          "finished_at": 1114550.67665503,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 27.470517781097442,
+          "elapsed_seconds": 40.50877949409187,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114551.575491918,
+          "finished_at": 1114564.613753631,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 34.47116812388413,
+          "elapsed_seconds": 40.87159758107737,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114558.576437665,
+          "finished_at": 1114564.976867122,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 34.47043243795633,
+          "elapsed_seconds": 40.87108833389357,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114558.576465359,
+          "finished_at": 1114564.977121255,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 33.75833027320914,
+          "elapsed_seconds": 40.818964621052146,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114557.870865401,
+          "finished_at": 1114564.931499749,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 28.366956148063764,
+          "elapsed_seconds": 40.54981812112965,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114552.475846804,
+          "finished_at": 1114564.658708777,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 33.75952077796683,
+          "elapsed_seconds": 40.819956552935764,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114557.870925,
+          "finished_at": 1114564.931360775,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 24.774084521923214,
+          "elapsed_seconds": 40.375226301839575,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114548.879715238,
+          "finished_at": 1114564.480857018,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 29.26271174615249,
+          "elapsed_seconds": 40.5915707279928,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114553.375741454,
+          "finished_at": 1114564.704600436,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 8.362520331982523,
+          "elapsed_seconds": 26.580254799919203,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114532.458950605,
+          "finished_at": 1114550.676685073,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 14.260451113106683,
+          "elapsed_seconds": 32.86018065712415,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114538.373039914,
+          "finished_at": 1114556.972769458,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 31.96456454996951,
+          "elapsed_seconds": 40.73198541090824,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114556.074108015,
+          "finished_at": 1114564.841528876,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 10.151696108048782,
+          "elapsed_seconds": 28.374413040000945,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114534.253224139,
+          "finished_at": 1114552.475941071,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 27.46386898588389,
+          "elapsed_seconds": 40.50215474702418,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114551.575543698,
+          "finished_at": 1114564.613829459,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 32.86024254304357,
+          "elapsed_seconds": 40.77433446794748,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114556.972717901,
+          "finished_at": 1114564.886809826,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 30.162769828923047,
+          "elapsed_seconds": 40.637589117046446,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114554.275869675,
+          "finished_at": 1114564.750688963,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 28.363398638088256,
+          "elapsed_seconds": 40.54627392999828,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114552.475802587,
+          "finished_at": 1114564.658677879,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 24.763856319943443,
+          "elapsed_seconds": 40.364932745927945,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114548.879703834,
+          "finished_at": 1114564.48078026,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 30.1629997510463,
+          "elapsed_seconds": 40.63763085985556,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114554.275954693,
+          "finished_at": 1114564.750585802,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 31.064077166840434,
+          "elapsed_seconds": 40.68575039901771,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114555.174526048,
+          "finished_at": 1114564.79619928,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 29.261285856133327,
+          "elapsed_seconds": 40.59011998120695,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114553.375653899,
+          "finished_at": 1114564.704488024,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 22.062876427080482,
+          "elapsed_seconds": 40.23435528110713,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114546.177777553,
+          "finished_at": 1114564.349256407,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 26.565825063968077,
+          "elapsed_seconds": 40.45694979908876,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114550.676584106,
+          "finished_at": 1114564.567708841,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 32.859560866840184,
+          "elapsed_seconds": 40.77376183797605,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114556.972729924,
+          "finished_at": 1114564.886930895,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 2.1263286280445755,
+          "elapsed_seconds": 20.286180797964334,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114526.217829171,
+          "finished_at": 1114544.377681341,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 21.16740408493206,
+          "elapsed_seconds": 40.18856353103183,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114545.280729922,
+          "finished_at": 1114564.301889368,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 23.863895325921476,
+          "elapsed_seconds": 40.32635030592792,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114547.977291032,
+          "finished_at": 1114564.439746012,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 22.062664380064234,
+          "elapsed_seconds": 40.23417023709044,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114546.177790513,
+          "finished_at": 1114564.34929637,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 32.859892955981195,
+          "elapsed_seconds": 40.77405064390041,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114556.972703936,
+          "finished_at": 1114564.886861624,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 29.263899846933782,
+          "elapsed_seconds": 40.59259850811213,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114553.375667628,
+          "finished_at": 1114564.704366289,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 26.564726174110547,
+          "elapsed_seconds": 40.45584576902911,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114550.676570777,
+          "finished_at": 1114564.567690372,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 3.0186946981120855,
+          "elapsed_seconds": 21.194368361029774,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114527.105221926,
+          "finished_at": 1114545.280895589,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 25.66307149687782,
+          "elapsed_seconds": 40.407226036069915,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114549.777507007,
+          "finished_at": 1114564.521661546,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 14.258768870029598,
+          "elapsed_seconds": 32.858629633206874,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114538.37292452,
+          "finished_at": 1114556.972785283,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 24.766943871974945,
+          "elapsed_seconds": 40.36802245792933,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114548.879683482,
+          "finished_at": 1114564.480762068,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 25.66242390102707,
+          "elapsed_seconds": 40.40653157886118,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114549.777480703,
+          "finished_at": 1114564.521588381,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 25.663192776031792,
+          "elapsed_seconds": 40.40733054000884,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114549.777494017,
+          "finished_at": 1114564.521631781,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 20.214123477926478,
+          "elapsed_seconds": 40.085598662961274,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114544.329577361,
+          "finished_at": 1114564.201052546,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 22.064170947065577,
+          "elapsed_seconds": 40.235804928001016,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114546.177764656,
+          "finished_at": 1114564.349398637,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        },
+        {
+          "ttft_seconds": 23.89584374288097,
+          "elapsed_seconds": 40.35827046493068,
+          "completion_tokens": 128,
+          "prompt_tokens": 498,
+          "first_answer_at": 1114547.977253212,
+          "finished_at": 1114564.439679934,
+          "marker_check": true,
+          "answer_excerpt": "ALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\nBETA4826\nGAMMA9561\n\nALPHA7319\n"
+        }
+      ],
+      "server_profile": {
+        "GPU_MEMORY_UTILIZATION": "0.95",
+        "MAX_MODEL_LEN": "262144",
+        "MAX_NUM_SEQS": "64",
+        "MAX_NUM_BATCHED_TOKENS": "2048",
+        "MAX_NUM_QUEUED_REQS": "128",
+        "EAGER": "1",
+        "PREFIX_CACHING": "0",
+        "OMP_NUM_THREADS": "8"
+      },
+      "ttft_seconds": {
+        "p50": 17.239525782992132,
+        "p95": 33.45117941409116
+      },
+      "elapsed_seconds": {
+        "p50": 36.47520410595462,
+        "p95": 40.81043045060942
+      },
+      "aggregate_output_tokens_per_second": 400.2263455367356,
+      "prompt_tokens_observed": [
+        498
+      ]
     }
   ],
   "tool_calling": {
@@ -8561,14 +10743,14 @@
         "name": "nonstream_auto",
         "passed": true,
         "tool_call": {
-          "id": "chatcmpl-tool-83afcb2037829d5e",
+          "id": "chatcmpl-tool-9d823ffa34ac2274",
           "type": "function",
           "function": {
             "name": "get_test_temperature",
             "arguments": "{\"city\": \"拉萨\"}"
           }
         },
-        "elapsed_seconds": 38.33436566614546
+        "elapsed_seconds": 1.2839366518892348
       },
       {
         "name": "synthetic_tool_roundtrip",
@@ -8579,7 +10761,7 @@
         "name": "stream_auto",
         "passed": true,
         "tool_call": {
-          "id": "chatcmpl-tool-bc706aeb43118f2b",
+          "id": "chatcmpl-tool-893ccb9681cd4445",
           "type": "function",
           "function": {
             "name": "get_test_temperature",
@@ -8588,5 +10770,32 @@
         }
       }
     ]
+  },
+  "final_profile": {
+    "GPU_MEMORY_UTILIZATION": "0.95",
+    "MAX_MODEL_LEN": "262144",
+    "MAX_NUM_SEQS": "64",
+    "MAX_NUM_BATCHED_TOKENS": "2048",
+    "MAX_NUM_QUEUED_REQS": "128",
+    "EAGER": "1",
+    "PREFIX_CACHING": "0",
+    "OMP_NUM_THREADS": "8",
+    "MAX_OUTPUT_TOKENS": "1024",
+    "enable_auto_tool_choice": true,
+    "tool_call_parser": "qwen3_coder",
+    "reasoning_parser": "qwen3"
+  },
+  "context_limit": {
+    "name": "context_limit_rejected",
+    "passed": true,
+    "http_status": 400,
+    "response": {
+      "error": {
+        "message": "This model's maximum context length is 262144 tokens. However, your prompt contains at least 262145 input tokens, which exceeds this limit even without any output tokens. Please reduce the length of the input prompt. (parameter=input_tokens, value=262145)",
+        "type": "BadRequestError",
+        "param": "input_tokens",
+        "code": 400
+      }
+    }
   }
 }
