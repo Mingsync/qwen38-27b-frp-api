@@ -1,21 +1,23 @@
 # Qwen3.8 27B 本地部署配置方案
 
-本仓库包含双 RTX 5090 上的 vLLM API 配置、官方模型下载脚本、API Key 鉴权、FRP TLS 隧道、Nginx HTTPS 和 systemd 服务。先阅读本文本地部署步骤，再按 [FRP 公网部署方案](FRP公网部署方案.md) 接入云服务器；[验证边界](VALIDATION.md) 与 [贡献及检查流程](CONTRIBUTING.md) 单独记录。
+当前采用双 RTX 5090 Linux 服务器的内网直连部署，业务客户端通过服务器内网 IP 和自定义 API Key 调用 vLLM。先按内网部署指南完成配置、启动和另一台内网电脑上的验收，再按本文调整模型与性能参数。[内网部署指南](内网部署指南.md)
+
+检查记录与提交流程单独维护。[验证边界](VALIDATION.md) · [贡献及检查流程](CONTRIBUTING.md)
 
 ```bash
 git clone https://github.com/Mingsync/qwen38-27b-frp-api.git
 cd qwen38-27b-frp-api
 ```
 
-克隆操作不启动服务。后续按文档把配置放到 `/opt/qwen38`，替换示例域名并初始化自己的 Key；仓库不包含实际业务密钥、证书私钥或模型权重。
+将配置放到 `/opt/qwen38`，设置实际内网 IP 和端口，并初始化自己的 Key。模型权重通过固定 revision 下载脚本准备。
 
 适用目标：Linux x86_64 单机、2 × NVIDIA GeForce RTX 5090 32GB，提供可自定义 API Key、IP、端口、域名及 URL 前缀的 OpenAI 兼容文本推理服务。
 
-首启用 16K 上下文、2 个活跃序列、Eager 模式，验收后再提高性能参数。域名访问可加宿主机 Nginx；也可直接通过内网 IP 访问。
+首启用 16K 上下文、2 个活跃序列、Eager 模式，验收后再提高性能参数。当前链路为内网电脑 → GPU 服务器内网 IP:8000 → Docker → vLLM。
 
-本目录是交付配置包，未连接或修改目标 Linux 服务器，未下载几十 GB 权重，也未在双卡 5090 上实测性能。已核对官方仓库和文档；脚本的静态与本地逻辑检查记录见 `VALIDATION.md`。文中的显存余量和参数档位是工程估算，最终以目标服务器的加载日志、NCCL 检查与压测为准。
+模型加载、显存与容量以目标服务器日志和压测为准，检查记录见 `VALIDATION.md`。文中的显存规划用于初始参数选择。
 
-**公网访问采用新增的 [FRP 公网部署方案](FRP公网部署方案.md)**：云端 Nginx HTTPS → 云端 frps 127.0.0.1:18000 → 校验证书的 TLS 隧道 → 内网 frpc → 本机 vLLM 127.0.0.1:8000。两端配置、固定版本安装、独立隧道 Token、证书、systemd 和公网验收均已包含在 `frp/` 及该文档中。
+内网部署从第 7.3 节配置实际发布地址，随后完成第 8 节检查与第 10 节调用。需要内网域名和 TLS 时再采用第 9 节的宿主机 Nginx 配置。
 
 ## 1. 模型与版本确认
 
@@ -85,6 +87,7 @@ SGLang 也是合理备选，尤其已有该框架运维经验时；不建议首�
 ```text
 Qwen3.8模型配置方案/
   README.md                 本方案
+  内网部署指南.md            当前内网直连安装与客户端验收
   VALIDATION.md             本地检查记录与待服务器验收项
   .env.example              IP、端口、模型、性能参数示例
   compose.yaml              双卡容器服务
@@ -243,7 +246,7 @@ chmod 600 secrets/api_key
 
 Compose 本地 secrets 是文件挂载，不是加密的集中密钥管理。root/Docker 管理员仍能访问密钥与进程环境。更换 Key 后执行 `docker compose up -d --force-recreate qwen`，并更新客户端。
 
-### 7.2 本机调试：默认值
+### 7.2 本机调试的初始化值
 
 `.env` 设置：
 
@@ -256,14 +259,14 @@ SERVED_MODEL_NAME=qwen3.8-27b
 
 Docker 内部始终监听 `0.0.0.0:8000`，宿主只发布 `127.0.0.1:8000`。其他电脑不能直接访问，这是默认访问范围。不能把容器内监听改成 `127.0.0.1` 后还期待宿主端口映射正常。
 
-### 7.3 内网直接访问：无需 Nginx
+### 7.3 当前内网直连配置
 
-例如服务器真实内网 IP 为 `192.168.10.20`，希望用端口 18000：
+完成初始化后，把 `.env` 改为实际服务器内网 IP。以下使用示例地址 `192.168.10.20` 和端口 8000。
 
 ```dotenv
 BIND_HOST=192.168.10.20
-API_PORT=18000
-API_BASE_URL=http://192.168.10.20:18000/v1
+API_PORT=8000
+API_BASE_URL=http://192.168.10.20:8000/v1
 ```
 
 这里的地址是示例，替换为服务器网卡实际拥有的地址，否则 Docker 会报 bind 错误。也可设 `BIND_HOST=0.0.0.0` 监听所有 IPv4 接口，但应配合网络访问控制。客户端不能使用 `0.0.0.0` 作为访问地址。
@@ -319,15 +322,15 @@ preflight 会实际在两卡执行 BF16 矩阵运算，并打印 vLLM/PyTorch/Tr
 
 ```bash
 docker compose ps
-curl --fail http://127.0.0.1:8000/health
-python3 verify.py --base-url http://127.0.0.1:8000/v1
+curl --fail http://192.168.10.20:8000/health
+python3 verify.py --base-url http://192.168.10.20:8000/v1
 ```
 
-若改成直连内网 IP/18000，以上 URL 一并替换。未手动重启或删除容器时，`restart: unless-stopped` 随 Docker 启动恢复服务；Docker 本身已设开机启动。
+将本节示例地址 `192.168.10.20:8000` 替换成 `.env` 中实际内网 IP 和 API_PORT。未手动重启或删除容器时，`restart: unless-stopped` 随 Docker 启动恢复服务；Docker 本身已设开机启动。
 
 ## 9. Nginx 反向代理（可选）
 
-通过云服务器 FRP 公网访问时，请采用 `FRP公网部署方案.md` 中的云端配置，后端指向云端 127.0.0.1:18000；无需在 GPU 主机再安装这一节的 Nginx。本节仅适用于 Nginx 与模型处于同一宿主机的访问方式，两个方案不可混淆上游端口。
+当前内网直连采用第 7.3 节的发布地址。需要内网域名、TLS 或路径前缀时，可使用本节的宿主机 Nginx，并将模型后端改为回环绑定。
 
 本包配置假设 Nginx 安装在同一台 Linux 宿主机。若 Nginx 也运行在容器中，`127.0.0.1` 指向那个容器自身，应改用共享 Docker 网络中的服务名并重新设计发布方式，不能直接照抄。
 
@@ -385,7 +388,7 @@ Nginx 默认只转发 models 和 chat completions，不公开 health、metrics�
 
 ```bash
 cd /opt/qwen38
-export OPENAI_BASE_URL=http://127.0.0.1:8000/v1
+export OPENAI_BASE_URL=http://192.168.10.20:8000/v1
 export OPENAI_API_KEY="$(cat secrets/api_key)"
 ```
 
@@ -434,7 +437,7 @@ curl --no-buffer --fail-with-body "$OPENAI_BASE_URL/chat/completions" \
 JSON
 ```
 
-应持续收到 `data: ...` 事件并正常结束。分别通过直连和 Nginx 验证，不能只测一次非流式成功就认定代理正确。
+应持续收到 `data: ...` 事件并正常结束。从内网业务客户端验证连续 SSE，采用可选 Nginx 时再补充代理链路验收。
 
 ### 10.4 Python SDK
 
@@ -450,7 +453,7 @@ python3 -m venv .client-venv
 
 `verify.py` 无第三方依赖，覆盖：无 Key/错误 Key 401、正确 Key 能列出模型、模型别名匹配、无 Key 无法推理、有 Key 返回非空中文内容，以及 `/invocations`、`/pause`、`/collective_rpc` 均被阻断。
 
-服务器验收还应包含：两卡均参与加载、NCCL 正确、直连和代理 SSE 成功、目标长度与并发负载成功、Key 轮换生效、重启后服务恢复。验收 URL 必须从实际业务客户端所在网络再测一次。
+服务器验收还应包含两卡均参与加载、NCCL 正确、内网客户端 SSE 成功、目标长度与并发负载成功、Key 轮换生效和重启恢复。验收 URL 从实际业务客户端所在内网再次测试。
 
 ## 11. 系统调优与容量扩展
 
@@ -479,25 +482,24 @@ python3 -m venv .client-venv
 watch -n 1 nvidia-smi
 docker compose stats
 docker compose logs --tail=200 qwen
-curl --fail http://127.0.0.1:8000/metrics \
+curl --fail http://192.168.10.20:8000/metrics \
   -H "Authorization: Bearer $OPENAI_API_KEY"
 ```
 
 建议业务验收矩阵：输入约 1K/8K/接近设定上限，输出 128/512/1024 tokens，并发 1/2/4（后者需已提高活跃序列参数）；每组重复多次，覆盖真实中文、长文、JSON 输出等负载。记录请求成功率、TTFT、端到端延迟 P50/P95、输出 tokens/s、显存峰值、排队和抢占情况。输入加输出必须在上限内。
 
-默认最多 2 路同时生成，运行加等待最多 8 个请求；Nginx 入口超限返回 429，vLLM 容量阀超限返回 503。客户端做有限次数、带抖动的退避，避免自动无限重试。共享 Key 不区分用户，`max_tokens` 上限按每个生成序列计算；多候选 `n>1` 会额外消耗算力。对外多人业务应在网关限制 `n=1`、按用户分配 Key、记录配额并实施总时长预算。当前包未提供用户管理/计费网关。SSE 保活不计入答案 token，也不限制请求总耗时。
+内网直连默认最多 2 路同时生成，运行加等待最多 8 个请求，vLLM 容量阀超限返回 503。采用可选 Nginx 入口时，其入口超限返回 429。客户端做有限次数、带抖动的退避，避免自动无限重试。共享 Key 不区分用户，`max_tokens` 上限按每个生成序列计算；多候选 `n>1` 会额外消耗算力。对外多人业务应在网关限制 `n=1`、按用户分配 Key、记录配额并实施总时长预算。当前包未提供用户管理/计费网关。SSE 保活不计入答案 token，也不限制请求总耗时。
 
 “支持多少用户”取决于用户请求频率与可接受等待。2 路活跃不等于只能注册 2 个用户，也不等于可承诺 8 人同时快速回答；先按目标输入/输出和业务频率测出延迟与吞吐，再决定用户规模。
 
-用标准库压测工具记录真实 API 数据，先跑一轮预热，再分别测试本地与 FRP 公网 URL：
+用标准库压测工具记录真实 API 数据。内网直连时，先设置实际地址，再测试各并发档位。
 
 ```bash
+export OPENAI_BASE_URL=http://192.168.10.20:8000/v1
 python3 benchmark.py --concurrency 1 --requests 1 --max-tokens 128
 python3 benchmark.py --concurrency 1 --requests 20 --max-tokens 256
 python3 benchmark.py --concurrency 2 --requests 20 --max-tokens 256
 python3 benchmark.py --concurrency 4 --requests 20 --max-tokens 256
-python3 benchmark.py --base-url https://llm.example.com/v1 \
-  --concurrency 2 --requests 20 --max-tokens 256
 # 长文场景另外加 --prompt-file /可信目录/代表性提示词.txt
 ```
 
@@ -556,11 +558,9 @@ docker compose up -d --force-recreate qwen
 
 最终上线以这些结果为准：目标网络可达、自定义 Key 生效、未授权推理被阻断、模型回答正确、代理流式正常、目标上下文/并发下无 OOM、重启恢复成功。完成后把实测容量、响应延迟和最终 digest 写回本目录的运维记录。
 
-## 14. 公网访问扩展：FRP 自建隧道
+## 14. 历史公网部署资料
 
-已按“内网主动连接云服务器”的方式补齐公网部署，详见 [FRP 公网部署方案](FRP公网部署方案.md)。默认只在云端开放 HTTPS 443、证书校验 80 和隧道入口 TCP 7000；云端业务映射口 18000 与内网模型 8000 均为回环监听。FRP v0.71.1 两端使用独立隧道 Token、TLS 服务端证书校验和 systemd 自动恢复，公网业务继续使用原模型 API Key。
-
-配置包未部署到真实公网环境。新增 Nginx 全局入口上限为 8 个对话 HTTP 请求，超过返回 429；该限制包含排队请求，不改变内网模型默认 2 路同时生成和每请求 16K 上下文。
+此前编写的 FRP 方案及 `frp/` 文件作为历史参考保留。当前部署按内网部署指南执行。[内网部署指南](内网部署指南.md)
 
 ## 15. 已部署旧版本的迁移
 
@@ -569,5 +569,5 @@ docker compose up -d --force-recreate qwen
 1. 对照 `.env.example`，将旧浮动镜像 tag 改为本次固定 digest；补齐输出、排队、默认思考、SSE 保活及性能开关。采用新默认值时为 `MAX_OUTPUT_TOKENS=1024`、`MAX_NUM_QUEUED_REQS=8`、`ENABLE_THINKING=0`、`SSE_KEEP_ALIVE_INTERVAL=15`、`PREFIX_CACHING=0`、`EAGER=1`。离线部署使用通过验收的本地不可变镜像 ID。
 2. 旧 schema v1 模型清单需要在联网下载环境用同 repo/revision 重跑新版下载脚本升级并重新验收；不同版本使用新目录。离线目标机转移升级后的完整清单与模型，不能手改 revision 绕过校验。
 3. 用 `validate_model.py --full-hash` 完成权重传输验收，再跑 Compose 配置、preflight、NCCL、鉴权与短生成。启动会检查模型身份和关键文件，失败时停止服务，修复完整模型后再启动。
-4. 重新创建容器，再验收本地与公网 SSE、长文及并发。请求 16K 上下文包含输出；默认输出上限为 1024，超额请求的实际行为与 finish_reason 一并检查。需要更长回答时先评估资源并调整服务端上限。
+4. 重新创建容器，再验收服务器和内网客户端的 SSE、长文及并发。请求 16K 上下文包含输出；默认输出上限为 1024，超额请求的实际行为与 finish_reason 一并检查。需要更长回答时先评估资源并调整服务端上限。
 5. 验收通过再恢复入口与 watchdog。若失败，回滚到完整旧版本配置/镜像/模型；不要只回退 `.env` 而保留不匹配的启动脚本或模型清单。
