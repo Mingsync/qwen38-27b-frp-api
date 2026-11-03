@@ -43,6 +43,8 @@ class ServerPolicyTests(unittest.TestCase):
         self.assertEqual(value('--max-num-queued-reqs'), '8')
         self.assertEqual(json.loads(value('--default-chat-template-kwargs')), {'enable_thinking': False})
         self.assertEqual(value('--sse-keep-alive-interval'), '15')
+        self.assertIn('--enable-auto-tool-choice', args)
+        self.assertEqual(value('--tool-call-parser'), 'qwen3_coder')
         self.assertNotIn('test-only-server-policy-secret-123456', result.stdout)
 
     def test_operator_policy_changes_reach_server(self):
