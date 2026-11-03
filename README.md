@@ -322,11 +322,11 @@ preflight 会实际在两卡执行 BF16 矩阵运算，并打印 vLLM/PyTorch/Tr
 
 ```bash
 docker compose ps
-curl --fail http://127.0.0.1:8000/health
-python3 verify.py --base-url http://127.0.0.1:8000/v1
+curl --fail http://192.168.10.20:8000/health
+python3 verify.py --base-url http://192.168.10.20:8000/v1
 ```
 
-内网直连时，将本节宿主机验收 URL 中的 `127.0.0.1:8000` 替换成 `.env` 中实际内网 IP 和 API_PORT。未手动重启或删除容器时，`restart: unless-stopped` 随 Docker 启动恢复服务；Docker 本身已设开机启动。
+将本节示例地址 `192.168.10.20:8000` 替换成 `.env` 中实际内网 IP 和 API_PORT。未手动重启或删除容器时，`restart: unless-stopped` 随 Docker 启动恢复服务；Docker 本身已设开机启动。
 
 ## 9. Nginx 反向代理（可选）
 
@@ -388,7 +388,7 @@ Nginx 默认只转发 models 和 chat completions，不公开 health、metrics�
 
 ```bash
 cd /opt/qwen38
-export OPENAI_BASE_URL=http://127.0.0.1:8000/v1
+export OPENAI_BASE_URL=http://192.168.10.20:8000/v1
 export OPENAI_API_KEY="$(cat secrets/api_key)"
 ```
 
@@ -437,7 +437,7 @@ curl --no-buffer --fail-with-body "$OPENAI_BASE_URL/chat/completions" \
 JSON
 ```
 
-应持续收到 `data: ...` 事件并正常结束。分别通过直连和 Nginx 验证，不能只测一次非流式成功就认定代理正确。
+应持续收到 `data: ...` 事件并正常结束。从内网业务客户端验证连续 SSE，采用可选 Nginx 时再补充代理链路验收。
 
 ### 10.4 Python SDK
 
@@ -482,13 +482,13 @@ python3 -m venv .client-venv
 watch -n 1 nvidia-smi
 docker compose stats
 docker compose logs --tail=200 qwen
-curl --fail http://127.0.0.1:8000/metrics \
+curl --fail http://192.168.10.20:8000/metrics \
   -H "Authorization: Bearer $OPENAI_API_KEY"
 ```
 
 建议业务验收矩阵：输入约 1K/8K/接近设定上限，输出 128/512/1024 tokens，并发 1/2/4（后者需已提高活跃序列参数）；每组重复多次，覆盖真实中文、长文、JSON 输出等负载。记录请求成功率、TTFT、端到端延迟 P50/P95、输出 tokens/s、显存峰值、排队和抢占情况。输入加输出必须在上限内。
 
-默认最多 2 路同时生成，运行加等待最多 8 个请求；Nginx 入口超限返回 429，vLLM 容量阀超限返回 503。客户端做有限次数、带抖动的退避，避免自动无限重试。共享 Key 不区分用户，`max_tokens` 上限按每个生成序列计算；多候选 `n>1` 会额外消耗算力。对外多人业务应在网关限制 `n=1`、按用户分配 Key、记录配额并实施总时长预算。当前包未提供用户管理/计费网关。SSE 保活不计入答案 token，也不限制请求总耗时。
+内网直连默认最多 2 路同时生成，运行加等待最多 8 个请求，vLLM 容量阀超限返回 503。采用可选 Nginx 入口时，其入口超限返回 429。客户端做有限次数、带抖动的退避，避免自动无限重试。共享 Key 不区分用户，`max_tokens` 上限按每个生成序列计算；多候选 `n>1` 会额外消耗算力。对外多人业务应在网关限制 `n=1`、按用户分配 Key、记录配额并实施总时长预算。当前包未提供用户管理/计费网关。SSE 保活不计入答案 token，也不限制请求总耗时。
 
 “支持多少用户”取决于用户请求频率与可接受等待。2 路活跃不等于只能注册 2 个用户，也不等于可承诺 8 人同时快速回答；先按目标输入/输出和业务频率测出延迟与吞吐，再决定用户规模。
 
