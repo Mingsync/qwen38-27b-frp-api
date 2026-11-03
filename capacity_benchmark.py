@@ -113,6 +113,7 @@ def summarize_telemetry(samples):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--base-url', required=True)
+    parser.add_argument('--model', default='qwen3.8-27b')
     parser.add_argument('--key-file', type=Path, required=True)
     parser.add_argument('--prompts', type=Path, required=True)
     parser.add_argument('--case', type=int, required=True)
@@ -135,7 +136,7 @@ def main():
         parser.error('Requested case is absent from the prompt file')
     key = args.key_file.read_text().strip()
     base = args.base_url.rstrip('/')
-    body = {'model': 'qwen3.8-27b', 'messages': case['messages'],
+    body = {'model': args.model, 'messages': case['messages'],
             'max_tokens': args.max_tokens, 'temperature': 0,
             'chat_template_kwargs': {'enable_thinking': False},
             'stream': True, 'stream_options': {'include_usage': True}}
