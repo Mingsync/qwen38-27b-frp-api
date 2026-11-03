@@ -9,12 +9,16 @@ import time
 import urllib.request
 
 
-def consume_sse(response, start, clock=time.perf_counter):
+def consume_sse(response, start, clock=time.perf_counter, *, capture_content=False,
+                total_timeout=None):
     first=None
     usage=None
     content_seen=False
     completed=False
+    content=[]
     for line in response:
+        if total_timeout is not None and clock()-start > total_timeout:
+            raise TimeoutError('Total generation deadline exceeded')
         # Ignore keep-alive comments and blank lines; they are not first tokens.
         if not line.startswith(b'data:'):
             continue
@@ -30,15 +34,20 @@ def consume_sse(response, start, clock=time.perf_counter):
         for choice in event.get('choices',[]):
             if choice.get('delta',{}).get('content'):
                 content_seen=True
+                if capture_content:
+                    content.append(choice['delta']['content'])
                 if first is None:
                     first=clock()-start
     if not completed:
         raise ValueError('SSE stream ended before DONE')
     if not content_seen:
         raise ValueError('No answer content received')
-    return {'ttft_seconds':first,'elapsed_seconds':clock()-start,
+    result={'ttft_seconds':first,'elapsed_seconds':clock()-start,
             'completion_tokens':None if usage is None else usage.get('completion_tokens'),
             'prompt_tokens':None if usage is None else usage.get('prompt_tokens')}
+    if capture_content:
+        result['content']=''.join(content)
+    return result
 
 
 def percentile(values, fraction):
