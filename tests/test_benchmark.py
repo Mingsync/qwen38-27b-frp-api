@@ -30,3 +30,17 @@ class BenchmarkTests(unittest.TestCase):
             stream=io.BytesIO(b'data: {"choices":[{"delta":{"content":"partial"}}]}\n'+tail)
             with self.assertRaises(ValueError):
                 consume_sse(stream,0)
+
+    def test_optional_content_capture_joins_only_answer_deltas(self):
+        stream = io.BytesIO(
+            b'data: {"choices":[{"delta":{"reasoning":"ignored"}}]}\n'
+            b'data: {"choices":[{"delta":{"content":"ALPHA"}}]}\n'
+            b'data: {"choices":[{"delta":{"content":"7319"}}]}\n'
+            b'data: [DONE]\n')
+        result = consume_sse(stream, 0, clock=lambda: 1, capture_content=True)
+        self.assertEqual(result['content'], 'ALPHA7319')
+
+    def test_heartbeats_do_not_extend_total_generation_deadline(self):
+        stream = io.BytesIO(b': heartbeat\n: heartbeat\n')
+        with self.assertRaises(TimeoutError):
+            consume_sse(stream, 0, clock=iter([1, 4]).__next__, total_timeout=3)
