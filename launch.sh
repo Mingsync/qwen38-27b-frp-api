@@ -45,6 +45,8 @@ args=(
   --default-chat-template-kwargs "{\"enable_thinking\":$thinking}"
   --sse-keep-alive-interval "${SSE_KEEP_ALIVE_INTERVAL:-15}"
   --reasoning-parser qwen3
+  --enable-auto-tool-choice
+  --tool-call-parser qwen3_coder
   --middleware local_guard.LocalApiGuard
   --disable-fastapi-docs
 )
