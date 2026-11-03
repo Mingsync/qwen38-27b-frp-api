@@ -93,7 +93,9 @@ def summarize_telemetry(samples):
         output['peak_kv_usage_fraction'] = max(values) if values else None
     counts = [sample['metrics']['vllm:num_preemptions_total'] for sample in samples
               if 'vllm:num_preemptions_total' in sample.get('metrics', {})]
-    output['preemptions_delta'] = max(counts) - counts[0] if counts else None
+    reset = any(current < previous for previous, current in zip(counts, counts[1:]))
+    output['preemption_counter_reset'] = reset
+    output['preemptions_delta'] = max(counts) - counts[0] if counts and not reset else None
     gpu_samples = [sample['gpus'] for sample in samples if 'gpus' in sample]
     if gpu_samples:
         output['peak_gpu_memory_mib'] = [max(sample[index][0] for sample in gpu_samples)
@@ -117,7 +119,7 @@ def main():
     parser.add_argument('--profile-env', type=Path)
     parser.add_argument('--output', type=Path, required=True)
     args = parser.parse_args()
-    count = args.requests or args.concurrency
+    count = args.concurrency if args.requests is None else args.requests
     if not 1 <= args.concurrency <= 256 or count < args.concurrency:
         parser.error('Use 1..256 clients and at least one full concurrency wave')
     if min(args.max_tokens, args.deadline) < 1:
@@ -142,10 +144,11 @@ def main():
     wave = threading.Barrier(args.concurrency)
 
     def request(index):
-        if index < args.concurrency:
-            wave.wait(timeout=60)
         started = time.perf_counter()
         try:
+            if index < args.concurrency:
+                wave.wait(timeout=60)
+            started = time.perf_counter()
             request = urllib.request.Request(base + '/chat/completions', data=encoded,
                 headers={'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key})
             with urllib.request.urlopen(request, timeout=60) as response:
@@ -165,10 +168,13 @@ def main():
     try:
         with ThreadPoolExecutor(max_workers=args.concurrency) as pool:
             results = list(pool.map(request, range(count)))
+        finished = time.perf_counter()
+        # Let the API exporter publish the final engine counters after the last SSE.
+        stop.wait(1)
     finally:
         stop.set()
         sampler.join(timeout=10)
-    elapsed = time.perf_counter() - started
+    elapsed = finished - started
     passed = [result for result in results if 'error' not in result]
     summary = {'case_context': args.case, 'prompt_tokens_expected': case['prompt_tokens'],
                'concurrency': args.concurrency, 'requests': count, 'successful': len(passed),
