@@ -1,9 +1,15 @@
 import unittest
 
-from capacity_benchmark import generation_overlap, parse_metrics, summarize_telemetry
+from capacity_benchmark import generation_overlap, markers_in_order, parse_metrics, summarize_telemetry
 
 
 class CapacityBenchmarkTests(unittest.TestCase):
+    def test_retrieval_requires_all_markers_in_requested_order(self):
+        markers = ['ALPHA', 'BETA', 'GAMMA']
+        self.assertTrue(markers_in_order('ALPHA\nBETA\nGAMMA', markers))
+        self.assertFalse(markers_in_order('GAMMA\nBETA\nALPHA', markers))
+        self.assertFalse(markers_in_order('ALPHA\nGAMMA', markers))
+
     def test_generation_overlap_excludes_waiting_and_failed_requests(self):
         results = [
             {'first_answer_at': 10, 'finished_at': 15},

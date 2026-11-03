@@ -48,6 +48,11 @@ def generation_overlap(results):
     return peak
 
 
+def markers_in_order(content, markers):
+    positions = [content.find(marker) for marker in markers]
+    return all(position >= 0 for position in positions) and positions == sorted(positions)
+
+
 def read_profile(path):
     values = {}
     for line in path.read_text().splitlines():
@@ -125,7 +130,9 @@ def main():
     if min(args.max_tokens, args.deadline) < 1:
         parser.error('Output and deadline must be positive')
     cases = [json.loads(line) for line in args.prompts.read_text().splitlines()]
-    case = next(case for case in cases if case['context'] == args.case)
+    case = next((case for case in cases if case['context'] == args.case), None)
+    if case is None:
+        parser.error('Requested case is absent from the prompt file')
     key = args.key_file.read_text().strip()
     base = args.base_url.rstrip('/')
     body = {'model': 'qwen3.8-27b', 'messages': case['messages'],
@@ -157,7 +164,7 @@ def main():
             content = result.pop('content')
             result.update(first_answer_at=started + result['ttft_seconds'],
                           finished_at=started + result['elapsed_seconds'],
-                          marker_check=all(marker in content for marker in case['expected_markers']),
+                          marker_check=markers_in_order(content, case['expected_markers']),
                           answer_excerpt=content[:160])
             return result
         except Exception as error:
