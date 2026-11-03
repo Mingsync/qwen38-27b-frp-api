@@ -2,6 +2,8 @@
 
 当前采用双 RTX 5090 Linux 服务器的内网直连部署，业务客户端通过服务器内网 IP 和自定义 API Key 调用 vLLM。先按内网部署指南完成配置、启动和另一台内网电脑上的验收，再按本文调整模型与性能参数。[内网部署指南](内网部署指南.md)
 
+2026-11-03 目标服务器已升级并验证 262144 总上下文、64 活跃序列上限、运行加等待上限 128、显存预算 0.95。单请求实测输入 261108、输出 1024；128K 输入验证 3 路同时生成。短输入最大探索档观察到 157 路，当前常驻配置按 64 路调度上限运行。完整输入/输出预算、延迟与原始数据单独维护。[容量实测与最终配置](CAPACITY.md)
+
 检查记录与提交流程单独维护。[验证边界](VALIDATION.md) · [贡献及检查流程](CONTRIBUTING.md)
 
 ```bash
@@ -80,7 +82,7 @@ RTX 5090 的参考规格为每卡 32GB GDDR7、计算能力 12.0、无 NVLink，
 
 SGLang 也是合理备选，尤其已有该框架运维经验时；不建议首轮同时安装两套复杂 CUDA 环境。Transformers 适合离线验证与实验，直接拿示例 `generate()` 充当生产 API 还需要自行实现调度、鉴权和服务管理。llama.cpp/Ollama 更适合 GGUF/个人客户端体验；本项目优先使用官方 Transformers 格式 FP8 权重，降低格式切换带来的变量。
 
-本包只承诺文本 Chat Completions 范围。默认关闭图像/视频输入与工具自动调用；如业务需要这些能力，再单独打开并验收。
+本包提供文本 Chat Completions，支持 `tools` 和 `tool_choice: "auto"`。启动器启用 `--enable-auto-tool-choice --tool-call-parser qwen3_coder`，沿用 `--reasoning-parser qwen3`。客户端负责执行返回的工具调用并提交 `role: "tool"` 结果。图像/视频输入默认关闭，需要时单独配置和验收。[模型工具调用配方](https://recipes.vllm.ai/Qwen/Qwen3.8-27B)
 
 ## 4. 交付文件与服务器目录
 
